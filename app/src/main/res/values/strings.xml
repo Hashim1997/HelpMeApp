@@ -1,0 +1,33 @@
+<resources>
+    <string name="app_name">Help Me</string>
+    <string name="app_title">HELP ME APP</string>
+    <string name="helper">HELPER</string>
+    <string name="user">USER</string>
+    <string name="quote">YOUR CAR IN RIGHT HAND</string>
+    <string name="choose">CHOOSE YOUR ACCOUNT</string>
+    <string name="email">EMAIL</string>
+    <string name="password">PASSWORD</string>
+    <string name="login">LOGIN</string>
+    <string name="no_account">DON\'T HAVE ACCOUNT! SIGNUP</string>
+    <string name="no_password">FORGET PASSWORD</string>
+    <string name="full_name">FULL NAME</string>
+    <string name="car_type">CAR TYPE</string>
+    <string name="car_color">CAR COLOR</string>
+    <string name="car_model">CAR MODEL</string>
+    <string name="phone">PHONE</string>
+    <string name="signup">SIGNUP</string>
+    <string name="experience_type">TYPE OF EXPERIENCE</string>
+    <string name="experience_level">LEVEL OF EXPERIENCE</string>
+    <string name="location">LOCATION</string>
+    <string name="edit">EDIT</string>
+    <string name="cancel">Cancel</string>
+    <string name="approve">Approve</string>
+    <string name="title_activity_user_location">Map</string>
+    <string name="profile">PROFILE</string>
+    <string name="order">ORDERS</string>
+    <string name="logout">LOGOUT</string>
+    <string name="menu_draw">MENU BUTTON</string>
+    <string name="open">OPEN</string>
+    <string name="close">CLOSE</string>
+    <string name="title_activity_user_home">Map</string>
+</resources>

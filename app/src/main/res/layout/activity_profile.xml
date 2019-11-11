@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".SignUP">
+
+
+    <TextView
+        android:id="@+id/textViewTitle22"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:layout_marginBottom="15dp"
+        android:fontFamily="@font/bungee_regular"
+        android:text="@string/app_title"
+        android:textColor="@color/dark_red"
+        android:textSize="26sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/FullNameProfile"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/FullNameProfile"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="15dp"
+        android:background="@color/yellow_alpha"
+        android:ems="10"
+        android:enabled="false"
+        android:fontFamily="@font/bungee_regular"
+        android:hint="@string/full_name"
+        android:inputType="text"
+        android:textAlignment="center"
+        android:textColor="@color/red"
+        android:textColorHint="@color/red"
+        app:layout_constraintBottom_toTopOf="@+id/profileEmail"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textViewTitle22" />
+
+    <EditText
+        android:id="@+id/profileEmail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="15dp"
+        android:background="@color/yellow_alpha"
+        android:ems="10"
+        android:fontFamily="@font/bungee_regular"
+        android:hint="@string/email"
+        android:enabled="false"
+        android:inputType="textEmailAddress"
+        android:textAlignment="center"
+        android:textColor="@color/red"
+        android:textColorHint="@color/red"
+        app:layout_constraintBottom_toTopOf="@+id/profilePassword"
+        app:layout_constraintStart_toStartOf="@+id/FullNameProfile"
+        app:layout_constraintTop_toBottomOf="@+id/FullNameProfile" />
+
+    <EditText
+        android:id="@+id/profilePassword"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="15dp"
+        android:background="@color/yellow_alpha"
+        android:ems="10"
+        android:fontFamily="@font/bungee_regular"
+        android:hint="@string/password"
+        android:inputType="textPassword"
+        android:textAlignment="center"
+        android:enabled="false"
+        android:textColor="@color/red"
+        android:textColorHint="@color/red"
+        app:layout_constraintBottom_toTopOf="@+id/profileCarType"
+        app:layout_constraintStart_toStartOf="@+id/profileEmail"
+        app:layout_constraintTop_toBottomOf="@+id/profileEmail" />
+
+    <EditText
+        android:id="@+id/profileCarType"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="15dp"
+        android:background="@color/yellow_alpha"
+        android:ems="10"
+        android:fontFamily="@font/bungee_regular"
+        android:hint="@string/car_type"
+        android:inputType="text"
+        android:textAlignment="center"
+        android:textColor="@color/red"
+        android:enabled="false"
+        android:textColorHint="@color/red"
+        app:layout_constraintBottom_toTopOf="@+id/profileCarColor"
+        app:layout_constraintStart_toStartOf="@+id/profilePassword"
+        app:layout_constraintTop_toBottomOf="@+id/profilePassword" />
+
+
+    <EditText
+        android:id="@+id/profileCarColor"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="15dp"
+        android:background="@color/yellow_alpha"
+        android:ems="10"
+        android:fontFamily="@font/bungee_regular"
+        android:enabled="false"
+        android:hint="@string/car_color"
+        android:inputType="text"
+        android:textAlignment="center"
+        android:textColor="@color/red"
+        android:textColorHint="@color/red"
+        app:layout_constraintBottom_toTopOf="@+id/profileCarModel"
+        app:layout_constraintStart_toStartOf="@+id/profileCarType"
+        app:layout_constraintTop_toBottomOf="@+id/profileCarType" />
+
+    <EditText
+        android:id="@+id/profileCarModel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="15dp"
+        android:background="@color/yellow_alpha"
+        android:ems="10"
+        android:fontFamily="@font/bungee_regular"
+        android:hint="@string/car_model"
+        android:inputType="text"
+        android:enabled="false"
+        android:textAlignment="center"
+        android:textColor="@color/red"
+        android:textColorHint="@color/red"
+        app:layout_constraintBottom_toTopOf="@+id/profilePhoneNumber"
+        app:layout_constraintStart_toStartOf="@+id/profileCarColor"
+        app:layout_constraintTop_toBottomOf="@+id/profileCarColor" />
+
+    <EditText
+        android:id="@+id/profilePhoneNumber"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="25dp"
+        android:background="@color/yellow_alpha"
+        android:ems="10"
+        android:fontFamily="@font/bungee_regular"
+        android:enabled="false"
+        android:hint="@string/phone"
+        android:inputType="phone"
+        android:textAlignment="center"
+        android:textColor="@color/red"
+        android:textColorHint="@color/red"
+        app:layout_constraintBottom_toTopOf="@+id/editProfileBtn"
+        app:layout_constraintStart_toStartOf="@+id/profileCarModel"
+        app:layout_constraintTop_toBottomOf="@+id/profileCarModel" />
+
+    <Button
+        android:id="@+id/editProfileBtn"
+        android:layout_width="130dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="27dp"
+        android:background="@color/white"
+        android:fontFamily="@font/bungee_regular"
+        android:text="@string/edit"
+        android:textColor="@color/black"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/profilePhoneNumber" />
+
+    <ProgressBar
+        android:id="@+id/progressProfile"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/profilePhoneNumber" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".SignUP">
+
+
+    <TextView
+        android:id="@+id/textViewTitle2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:layout_marginBottom="15dp"
+        android:fontFamily="@font/bungee_regular"
+        android:text="@string/app_title"
+        android:textColor="@color/dark_red"
+        android:textSize="26sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/FullName"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/FullName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="15dp"
+        android:background="@color/yellow_alpha"
+        android:ems="10"
+        android:fontFamily="@font/bungee_regular"
+        android:hint="@string/full_name"
+        android:inputType="text"
+        android:textAlignment="center"
+        android:textColor="@color/red"
+        android:textColorHint="@color/red"
+        app:layout_constraintBottom_toTopOf="@+id/signUpEmail"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textViewTitle2" />
+
+    <EditText
+        android:id="@+id/signUpEmail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="15dp"
+        android:background="@color/yellow_alpha"
+        android:ems="10"
+        android:fontFamily="@font/bungee_regular"
+        android:hint="@string/email"
+        android:inputType="textEmailAddress"
+        android:textAlignment="center"
+        android:textColor="@color/red"
+        android:textColorHint="@color/red"
+        app:layout_constraintBottom_toTopOf="@+id/signUpPassword"
+        app:layout_constraintStart_toStartOf="@+id/FullName"
+        app:layout_constraintTop_toBottomOf="@+id/FullName" />
+
+    <EditText
+        android:id="@+id/signUpPassword"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="15dp"
+        android:background="@color/yellow_alpha"
+        android:ems="10"
+        android:fontFamily="@font/bungee_regular"
+        android:hint="@string/password"
+        android:inputType="textPassword"
+        android:textAlignment="center"
+        android:textColor="@color/red"
+        android:textColorHint="@color/red"
+        app:layout_constraintBottom_toTopOf="@+id/carType"
+        app:layout_constraintStart_toStartOf="@+id/signUpEmail"
+        app:layout_constraintTop_toBottomOf="@+id/signUpEmail" />
+
+    <EditText
+        android:id="@+id/carType"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="15dp"
+        android:background="@color/yellow_alpha"
+        android:ems="10"
+        android:fontFamily="@font/bungee_regular"
+        android:hint="@string/car_type"
+        android:inputType="text"
+        android:textAlignment="center"
+        android:textColor="@color/red"
+        android:textColorHint="@color/red"
+        app:layout_constraintBottom_toTopOf="@+id/carColor"
+        app:layout_constraintStart_toStartOf="@+id/signUpPassword"
+        app:layout_constraintTop_toBottomOf="@+id/signUpPassword" />
+
+    <EditText
+        android:id="@+id/carColor"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="15dp"
+        android:background="@color/yellow_alpha"
+        android:ems="10"
+        android:fontFamily="@font/bungee_regular"
+        android:hint="@string/car_color"
+        android:inputType="text"
+        android:textAlignment="center"
+        android:textColor="@color/red"
+        android:textColorHint="@color/red"
+        app:layout_constraintBottom_toTopOf="@+id/carModel"
+        app:layout_constraintStart_toStartOf="@+id/carType"
+        app:layout_constraintTop_toBottomOf="@+id/carType" />
+
+
+    <EditText
+        android:id="@+id/carModel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="15dp"
+        android:background="@color/yellow_alpha"
+        android:ems="10"
+        android:fontFamily="@font/bungee_regular"
+        android:hint="@string/car_model"
+        android:inputType="text"
+        android:textAlignment="center"
+        android:textColor="@color/red"
+        android:textColorHint="@color/red"
+        app:layout_constraintBottom_toTopOf="@+id/phoneNumber"
+        app:layout_constraintStart_toStartOf="@+id/carColor"
+        app:layout_constraintTop_toBottomOf="@+id/carColor" />
+
+    <EditText
+        android:id="@+id/phoneNumber"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="25dp"
+        android:background="@color/yellow_alpha"
+        android:ems="10"
+        android:fontFamily="@font/bungee_regular"
+        android:hint="@string/phone"
+        android:inputType="phone"
+        android:textAlignment="center"
+        android:textColor="@color/red"
+        android:textColorHint="@color/red"
+        app:layout_constraintBottom_toTopOf="@+id/signUpBtn"
+        app:layout_constraintStart_toStartOf="@+id/carModel"
+        app:layout_constraintTop_toBottomOf="@+id/carModel" />
+
+    <Button
+        android:id="@+id/signUpBtn"
+        android:layout_width="130dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="27dp"
+        android:background="@color/alpha_black"
+        android:fontFamily="@font/bungee_regular"
+        android:text="@string/signup"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/phoneNumber" />
+
+    <ProgressBar
+        android:id="@+id/progressBarSignUP"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/phoneNumber" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/background_alpha"
+    tools:context=".AccountChooseActivity">
+
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="33dp"
+        android:layout_marginBottom="120dp"
+        android:fontFamily="@font/bungee_regular"
+        android:text="@string/app_title"
+        android:textColor="@color/dark_red"
+        android:textSize="26sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/helperBtn"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/helperBtn"
+        android:layout_width="0dp"
+        android:layout_height="120dp"
+        android:layout_marginEnd="26dp"
+        android:layout_marginBottom="122dp"
+        android:background="@color/red_alpha"
+        android:fontFamily="@font/bungee_regular"
+        android:text="@string/helper"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toTopOf="@+id/textView3"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/userBtn"
+        app:layout_constraintTop_toBottomOf="@+id/textView" />
+
+    <Button
+        android:id="@+id/userBtn"
+        android:layout_width="0dp"
+        android:layout_height="120dp"
+        android:layout_marginStart="26dp"
+        android:layout_marginEnd="27dp"
+        android:background="@color/alpha_black"
+        android:fontFamily="@font/bungee_regular"
+        android:text="@string/user"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        app:layout_constraintBaseline_toBaselineOf="@+id/helperBtn"
+        app:layout_constraintEnd_toStartOf="@+id/helperBtn"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/qouteText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="15dp"
+        android:fontFamily="@font/bungee_regular"
+        android:text="@string/quote"
+        android:textColor="@color/red"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.52"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView3" />
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="50dp"
+        android:fontFamily="@font/bungee_regular"
+        android:text="@string/choose"
+        android:textColor="@color/red"
+        android:textSize="19sp"
+        app:layout_constraintBottom_toTopOf="@+id/qouteText"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/helperBtn" />
+</androidx.constraintlayout.widget.ConstraintLayout>
