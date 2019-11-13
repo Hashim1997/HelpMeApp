@@ -1,9 +1,14 @@
 package com.example.helpme;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+
 import android.Manifest;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -14,6 +19,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
@@ -47,6 +53,7 @@ public class SignUP extends AppCompatActivity {
     private int indexString;
     private static final long LOCATION_REFRESH_TIME = 1;
     private static final long LOCATION_REFRESH_DISTANCE = 10;
+    public static final int REQUEST_LOCATION=1;
     LocationListener locationListener;
     LocationManager locationManager;
     Button signUp;
@@ -121,8 +128,14 @@ public class SignUP extends AppCompatActivity {
                     //                                          int[] grantResults)
                     // to handle the case where the user grants the permission. See the documentation
                     // for Activity#requestPermissions for more details.
-                    return;
+                    requestLocationAccess();
+
                 }
+            }
+            else {
+                    Intent myIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                    startActivity(myIntent);
+
             }
             assert locationManager != null;
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, LOCATION_REFRESH_TIME, LOCATION_REFRESH_DISTANCE, locationListener);
@@ -193,7 +206,18 @@ public class SignUP extends AppCompatActivity {
         });
     }
 
-    public void getAddress(double lng,double lat) throws IOException {
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode==REQUEST_LOCATION){
+            if (grantResults.length==1 && grantResults[0]==PackageManager.PERMISSION_GRANTED)
+                Toast.makeText(getApplicationContext(),"permission granted",Toast.LENGTH_SHORT).show();
+            else
+                Toast.makeText(getApplicationContext(),"Permission denied",Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public void getAddress(double lng, double lat) throws IOException {
         List<Address> addresses;
         Geocoder geocoder=new Geocoder(getApplicationContext(), Locale.getDefault());
         addresses = geocoder.getFromLocation(lat,lng,1);
@@ -392,6 +416,34 @@ public class SignUP extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(),"Error Occurred",Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void requestLocationAccess(){
+        if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                Manifest.permission.READ_EXTERNAL_STORAGE)) {
+
+            new AlertDialog.Builder(this)
+                    .setTitle("Permission needed")
+                    .setMessage("This permission is needed because of this and that")
+                    .setPositiveButton("ok", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            ActivityCompat.requestPermissions(SignUP.this,
+                                    new String[] {Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_LOCATION);
+                        }
+                    })
+                    .setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    })
+                    .create().show();
+
+        } else {
+            ActivityCompat.requestPermissions(this,
+                    new String[] {Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_LOCATION);
+        }
     }
 
 }
