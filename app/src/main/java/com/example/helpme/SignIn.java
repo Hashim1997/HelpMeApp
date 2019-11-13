@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -58,14 +59,15 @@ public class SignIn extends AppCompatActivity {
         loginBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                progressBar.setVisibility(View.VISIBLE);
-                loginBtn.setVisibility(View.GONE);
                 password=loginPassword.getText().toString().trim();
                 substring=loginEmail.getText().toString().trim();
-                int index=substring.indexOf(".");
-                String result=substring.substring(0,index);
+
 
                 if (validation()){
+                    progressBar.setVisibility(View.VISIBLE);
+                    loginBtn.setVisibility(View.GONE);
+                    int index=substring.indexOf(".");
+                    String result=substring.substring(0,index);
                     if (type.equals("user")){
                         retrieveUserAccount(result,password);
                     }
@@ -174,7 +176,9 @@ public class SignIn extends AppCompatActivity {
     private boolean validation(){
         boolean state=true;
 
-        if (substring.isEmpty()){
+        boolean emailState= Patterns.EMAIL_ADDRESS.matcher(substring).matches();
+
+        if (substring.isEmpty() || !emailState){
             loginEmail.setError("Please input email");
             state=false;
         }
