@@ -48,14 +48,8 @@ public class SignUP extends AppCompatActivity {
     private EditText fullName, email, passWord, carType, carColor, carModel, phoneNumber;
     private String fullNameText, emailText, passWordText, carTypeText, carColorText, carModelText, phoneNumberText, type;
     private String levelOfExperienceText, typeOfExperienceText, locationText;
-    private double longitude, latitude;
     private SharedPreferences loginPref;
     private int indexString;
-    private static final long LOCATION_REFRESH_TIME = 1;
-    private static final long LOCATION_REFRESH_DISTANCE = 10;
-    public static final int REQUEST_LOCATION=1;
-    LocationListener locationListener;
-    LocationManager locationManager;
     Button signUp;
     ProgressBar progressBar;
 
@@ -84,61 +78,6 @@ public class SignUP extends AppCompatActivity {
             carType.setHint(R.string.experience_type);
             carColor.setHint(R.string.experience_level);
             carModel.setHint(R.string.location);
-            carModel.setFocusable(false);
-            signUp.setClickable(false);
-
-            locationListener=new LocationListener() {
-                @Override
-                public void onLocationChanged(Location location) {
-                    Toast.makeText(getApplicationContext(),"Success",Toast.LENGTH_LONG).show();
-                    longitude=location.getLongitude();
-                    latitude=location.getLatitude();
-
-                    try {
-                        getAddress(location.getLongitude(),location.getLatitude());
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                        Toast.makeText(getApplicationContext(),e.toString(),Toast.LENGTH_LONG).show();
-                    }
-                }
-
-                @Override
-                public void onStatusChanged(String provider, int status, Bundle extras) {
-
-                }
-
-                @Override
-                public void onProviderEnabled(String provider) {
-
-                }
-
-                @Override
-                public void onProviderDisabled(String provider) {
-                    Toast.makeText(getApplicationContext(),"Please Turn On Location",Toast.LENGTH_LONG).show();
-                }
-            };
-
-            locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                    // TODO: Consider calling
-                    //    Activity#requestPermissions
-                    // here to request the missing permissions, and then overriding
-                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                    //                                          int[] grantResults)
-                    // to handle the case where the user grants the permission. See the documentation
-                    // for Activity#requestPermissions for more details.
-                    requestLocationAccess();
-
-                }
-            }
-            else {
-                    Intent myIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                    startActivity(myIntent);
-
-            }
-            assert locationManager != null;
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, LOCATION_REFRESH_TIME, LOCATION_REFRESH_DISTANCE, locationListener);
         }
 
 
@@ -194,8 +133,6 @@ public class SignUP extends AppCompatActivity {
                         helper.setTypeOfExperience(typeOfExperienceText);
                         helper.setLevelOfExperience(levelOfExperienceText);
                         helper.setLocation(locationText);
-                        helper.setLatitude(latitude);
-                        helper.setLongitude(longitude);
                         checkHelperAccountExist(helper.getEmail(),helper);
                     }
                     else
@@ -206,26 +143,9 @@ public class SignUP extends AppCompatActivity {
         });
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode==REQUEST_LOCATION){
-            if (grantResults.length==1 && grantResults[0]==PackageManager.PERMISSION_GRANTED)
-                Toast.makeText(getApplicationContext(),"permission granted",Toast.LENGTH_SHORT).show();
-            else
-                Toast.makeText(getApplicationContext(),"Permission denied",Toast.LENGTH_SHORT).show();
-        }
-    }
 
-    public void getAddress(double lng, double lat) throws IOException {
-        List<Address> addresses;
-        Geocoder geocoder=new Geocoder(getApplicationContext(), Locale.getDefault());
-        addresses = geocoder.getFromLocation(lat,lng,1);
-        String address=addresses.get(0).getAddressLine(0);
-        Log.i("addressX",address);
-        carModel.setText(address);
-        signUp.setClickable(true);
-    }
+
+
 
 
     private boolean userValidation(){
@@ -418,32 +338,5 @@ public class SignUP extends AppCompatActivity {
         });
     }
 
-    private void requestLocationAccess(){
-        if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-                Manifest.permission.READ_EXTERNAL_STORAGE)) {
-
-            new AlertDialog.Builder(this)
-                    .setTitle("Permission needed")
-                    .setMessage("This permission is needed because of this and that")
-                    .setPositiveButton("ok", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            ActivityCompat.requestPermissions(SignUP.this,
-                                    new String[] {Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_LOCATION);
-                        }
-                    })
-                    .setNegativeButton("cancel", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                        }
-                    })
-                    .create().show();
-
-        } else {
-            ActivityCompat.requestPermissions(this,
-                    new String[] {Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_LOCATION);
-        }
-    }
 
 }
