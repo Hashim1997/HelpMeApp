@@ -4,12 +4,10 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import android.Manifest;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -17,22 +15,16 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.PorterDuff;
-import android.location.Address;
-import android.location.Geocoder;
 import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
-
 import com.example.helpme.adapter.OrderAdapter;
 import com.example.helpme.model.Helper;
 import com.example.helpme.model.UserOrder;
@@ -40,10 +32,8 @@ import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
-import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -56,12 +46,9 @@ import com.karumi.dexter.listener.PermissionDeniedResponse;
 import com.karumi.dexter.listener.PermissionGrantedResponse;
 import com.karumi.dexter.listener.PermissionRequest;
 import com.karumi.dexter.listener.single.PermissionListener;
-
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 
 public class HelperHome extends AppCompatActivity {
 
@@ -71,20 +58,20 @@ public class HelperHome extends AppCompatActivity {
     private ImageView drawerImage;
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle toggle;
-    FusedLocationProviderClient fusedLocationProviderClient;
-    private LocationRequest locationRequest;
     private static final int REQUEST_CODE=101;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_helper_home);
 
+        Intent intentService=new Intent(getApplicationContext(),LocationService.class);
         if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.M){
             requestLocationPermission();
+            startService(intentService);
         }
         else{
             openLocationSetting();
-            fetchLocation();
+            startService(intentService);
         }
 
         helpOrderRecycler=findViewById(R.id.orderList);
@@ -142,6 +129,7 @@ public class HelperHome extends AppCompatActivity {
                             editor.apply();
                             Intent intent1=new Intent(HelperHome.this,AccountChooseActivity.class);
                             startActivity(intent1);
+                            stopService(new Intent(getApplicationContext(),LocationService.class));
                             HelperHome.this.finish();
                             break;
 
@@ -229,14 +217,13 @@ public class HelperHome extends AppCompatActivity {
         orderList.add(order9);
 
 
-
     }
 
     private void requestLocationPermission() {
         Dexter.withActivity(HelperHome.this).withPermission(Manifest.permission.ACCESS_FINE_LOCATION).withListener(new PermissionListener() {
             @Override
             public void onPermissionGranted(PermissionGrantedResponse response) {
-                fetchLocation();
+                startService(new Intent(getApplicationContext(),LocationService.class));
             }
 
             @Override
@@ -245,7 +232,6 @@ public class HelperHome extends AppCompatActivity {
                     openLocationSetting();
                 }
             }
-
             @Override
             public void onPermissionRationaleShouldBeShown(PermissionRequest permission, PermissionToken token) {
 
@@ -279,63 +265,14 @@ public class HelperHome extends AppCompatActivity {
         startActivity(intent);
     }
 
-    private void fetchLocation() {
-
-
-        fusedLocationProviderClient= new FusedLocationProviderClient(this);
-        locationRequest=new LocationRequest();
-
-
-        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        locationRequest.setFastestInterval(2000);
-        locationRequest.setInterval(4000);
-        fusedLocationProviderClient.requestLocationUpdates(locationRequest,new LocationCallback(){
-            @Override
-            public void onLocationResult(LocationResult locationResult) {
-                super.onLocationResult(locationResult);
-                Log.i("curLat",String.valueOf(locationResult.getLastLocation().getLatitude()));
-                Log.i("curLon",String.valueOf(locationResult.getLastLocation().getLongitude()));
-
-                Toast.makeText(getApplicationContext(), locationResult.getLastLocation()
-                        .getLatitude() +" "+ locationResult.getLastLocation().getLongitude(),Toast.LENGTH_SHORT).show();
-                saveHelperLocation(locationResult.getLastLocation().getLatitude(),locationResult.getLastLocation().getLongitude());
-
-            }
-        },getMainLooper());
-    }
-
-    //save helper location for user
-    private void saveHelperLocation(Double lat, Double lon){
-        SharedPreferences preferences=getSharedPreferences("login",MODE_PRIVATE);
-        String email=preferences.getString("email","empty");
-        FirebaseDatabase database=FirebaseDatabase.getInstance();
-        DatabaseReference reference=database.getReference("ActiveLocation");
-        HashMap<String,Double> loc=new HashMap<>();
-        loc.put("lat",lat);
-        loc.put("lon",lon);
-        reference.child(email).setValue(loc).addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
-                Log.i("Statues","Successful");
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Log.i("Statues","Failed");
-                Toast.makeText(getApplicationContext(),e.toString(),Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == REQUEST_CODE) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                fetchLocation();
+                startService(new Intent(getApplicationContext(),LocationService.class));
             }
         }
     }
-
 
     private void setupRecycler(Context context, List<UserOrder> orders, Location location){
         OrderAdapter adapter=new OrderAdapter(context,orders,location,HelperHome.this);
