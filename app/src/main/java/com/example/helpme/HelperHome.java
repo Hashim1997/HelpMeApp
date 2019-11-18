@@ -49,6 +49,12 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.karumi.dexter.Dexter;
+import com.karumi.dexter.PermissionToken;
+import com.karumi.dexter.listener.PermissionDeniedResponse;
+import com.karumi.dexter.listener.PermissionGrantedResponse;
+import com.karumi.dexter.listener.PermissionRequest;
+import com.karumi.dexter.listener.single.PermissionListener;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -71,7 +77,16 @@ public class HelperHome extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_helper_home);
 
-        fetchLocation();
+        if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.M){
+            requestLocationPermission();
+        }
+        else{
+            openLocationSetting();
+            fetchLocation();
+        }
+
+        requestLocationPermission();
+        //fetchLocation();
 
         helpOrderRecycler=findViewById(R.id.orderList);
         drawerImage=findViewById(R.id.drawerSwitch);
@@ -218,17 +233,60 @@ public class HelperHome extends AppCompatActivity {
 
     }
 
+    private void requestLocationPermission() {
+        Dexter.withActivity(HelperHome.this).withPermission(Manifest.permission.ACCESS_FINE_LOCATION).withListener(new PermissionListener() {
+            @Override
+            public void onPermissionGranted(PermissionGrantedResponse response) {
+                fetchLocation();
+            }
+
+            @Override
+            public void onPermissionDenied(PermissionDeniedResponse response) {
+                if (response.isPermanentlyDenied()){
+                    openLocationSetting();
+                }
+            }
+
+            @Override
+            public void onPermissionRationaleShouldBeShown(PermissionRequest permission, PermissionToken token) {
+
+            }
+        });
+    }
+
+    private void openLocationSetting(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(HelperHome.this);
+        builder.setTitle("Need Permissions");
+        builder.setMessage("This app needs permission to use this feature. You can grant them in app settings.");
+        builder.setPositiveButton("GOTO SETTINGS", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+                openSettings();
+            }
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+        builder.show();
+
+    }
+
+    private void openSettings(){
+        Intent intent=new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+        startActivity(intent);
+    }
+
     private void fetchLocation() {
 
 
         fusedLocationProviderClient= new FusedLocationProviderClient(this);
         locationRequest=new LocationRequest();
 
-        if (ActivityCompat.checkSelfPermission(this,Manifest.permission.ACCESS_FINE_LOCATION) !=PackageManager.PERMISSION_GRANTED){
-            ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.ACCESS_FINE_LOCATION},REQUEST_CODE);
-        }
 
-        else {
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         locationRequest.setFastestInterval(2000);
         locationRequest.setInterval(4000);
@@ -239,9 +297,12 @@ public class HelperHome extends AppCompatActivity {
                 Log.i("curLat",String.valueOf(locationResult.getLastLocation().getLatitude()));
                 Log.i("curLon",String.valueOf(locationResult.getLastLocation().getLongitude()));
 
+                Toast.makeText(getApplicationContext(), locationResult.getLastLocation()
+                        .getLatitude() +" "+ locationResult.getLastLocation().getLongitude(),Toast.LENGTH_SHORT).show();
+
             }
         },getMainLooper());
-        }
+
     }
 
     @Override
