@@ -41,6 +41,7 @@ import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
@@ -58,6 +59,7 @@ import com.karumi.dexter.listener.single.PermissionListener;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
@@ -84,9 +86,6 @@ public class HelperHome extends AppCompatActivity {
             openLocationSetting();
             fetchLocation();
         }
-
-        requestLocationPermission();
-        //fetchLocation();
 
         helpOrderRecycler=findViewById(R.id.orderList);
         drawerImage=findViewById(R.id.drawerSwitch);
@@ -299,10 +298,33 @@ public class HelperHome extends AppCompatActivity {
 
                 Toast.makeText(getApplicationContext(), locationResult.getLastLocation()
                         .getLatitude() +" "+ locationResult.getLastLocation().getLongitude(),Toast.LENGTH_SHORT).show();
+                saveHelperLocation(locationResult.getLastLocation().getLatitude(),locationResult.getLastLocation().getLongitude());
 
             }
         },getMainLooper());
+    }
 
+    //save helper location for user
+    private void saveHelperLocation(Double lat, Double lon){
+        SharedPreferences preferences=getSharedPreferences("login",MODE_PRIVATE);
+        String email=preferences.getString("email","empty");
+        FirebaseDatabase database=FirebaseDatabase.getInstance();
+        DatabaseReference reference=database.getReference("ActiveLocation");
+        HashMap<String,Double> loc=new HashMap<>();
+        loc.put("lat",lat);
+        loc.put("lon",lon);
+        reference.child(email).setValue(loc).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                Log.i("Statues","Successful");
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.i("Statues","Failed");
+                Toast.makeText(getApplicationContext(),e.toString(),Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @Override
