@@ -8,6 +8,7 @@
     <string name="email">EMAIL</string>
     <string name="password">PASSWORD</string>
     <string name="login">LOGIN</string>
+    <string name="wait_dialog_text">LOOKING FOR NEARBY HELPER</string>
     <string name="no_account">DON\'T HAVE ACCOUNT! SIGNUP</string>
     <string name="no_password">FORGET PASSWORD</string>
     <string name="full_name">FULL NAME</string>
@@ -29,5 +30,6 @@
     <string name="menu_draw">MENU BUTTON</string>
     <string name="open">OPEN</string>
     <string name="close">CLOSE</string>
+    <string name="locBtn">LOCATION BUTTON</string>
     <string name="title_activity_user_home">Map</string>
 </resources>

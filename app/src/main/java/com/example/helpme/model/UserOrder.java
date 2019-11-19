@@ -5,8 +5,17 @@ public class UserOrder {
     private String location;
     private String carType;
     private String carColor;
+    private String email;
     private double longitude;
     private double latitude;
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
 
     public UserOrder() {}
 
