@@ -55,7 +55,8 @@
                 android:layout_height="wrap_content"
                 android:clickable="true"
                 android:focusable="true"
-                app:srcCompat="@mipmap/ic_location" />
+                app:srcCompat="@mipmap/ic_location"
+                android:contentDescription="@string/location" />
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -76,7 +77,8 @@
                 android:clickable="true"
                 android:focusable="true"
                 android:layout_height="wrap_content"
-                app:srcCompat="@mipmap/ic_approve" />
+                app:srcCompat="@mipmap/ic_approve"
+                android:contentDescription="@string/completeBtn" />
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

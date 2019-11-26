@@ -6,6 +6,7 @@ public class UserOrder {
     private String carType;
     private String carColor;
     private String email;
+    private String key;
     private double longitude;
     private double latitude;
 
@@ -65,5 +66,13 @@ public class UserOrder {
 
     public void setCarColor(String carColor) {
         this.carColor = carColor;
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
     }
 }

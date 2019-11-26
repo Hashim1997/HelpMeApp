@@ -1,35 +1,35 @@
 package com.example.helpme.adapter;
 
 import android.annotation.SuppressLint;
-import android.app.Application;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.drawable.ClipDrawable;
 import android.location.Location;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.helpme.R;
 import com.example.helpme.UserLocation;
 import com.example.helpme.model.UserOrder;
+
 import java.util.List;
 
 public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.ViewHolderOrder> {
 
-    private Context context,mContext;
-    private List<UserOrder> userOrderList;
-    private Location location;
+    private final Context context;
+    private final Context mContext;
+    private final List<UserOrder> userOrderList;
+    private final Location location;
 
     public OrderAdapter(Context context, List<UserOrder> userOrderList, Location location, Context mContext) {
         this.context = context;
@@ -41,7 +41,7 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.ViewHolderOr
     @NonNull
     @Override
     public OrderAdapter.ViewHolderOrder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view= LayoutInflater.from(parent.getContext()).inflate(R.layout.item_card_order,null);
+        View view= LayoutInflater.from(parent.getContext()).inflate(R.layout.item_card_order,parent,false);
         return new ViewHolderOrder(view);
     }
 
@@ -53,9 +53,16 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.ViewHolderOr
         startPoint.setLatitude(order.getLatitude());
         startPoint.setLongitude(order.getLongitude());
         double distance =location.distanceTo(startPoint);
-        order.setLocation(String.valueOf(Math.round(distance/1000)));
+        Log.i("distanceX",String.valueOf(distance));
         holder.nameUser.setText(order.getFullName()+" Needs Help");
-        holder.location.setText(order.getLocation()+" KM AWAY FROM YOU");
+        if (distance<=1000.0f){
+            order.setLocation(String.valueOf(Math.round(distance)));
+            holder.location.setText(order.getLocation()+" M AWAY FROM YOU");
+        }
+        else if (distance>1000.0f){
+            order.setLocation(String.valueOf(Math.round(distance)/1000));
+            holder.location.setText(order.getLocation()+" KM AWAY FROM YOU");
+        }
         holder.cancelOrder.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -128,8 +135,10 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.ViewHolderOr
 
     class ViewHolderOrder extends RecyclerView.ViewHolder{
 
-        TextView nameUser,location;
-        ImageView cancelOrder,approveOrder;
+        final TextView nameUser;
+        final TextView location;
+        final ImageView cancelOrder;
+        final ImageView approveOrder;
 
         ViewHolderOrder(@NonNull View itemView) {
             super(itemView);

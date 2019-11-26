@@ -1,7 +1,5 @@
 package com.example.helpme;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
@@ -9,6 +7,10 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.example.helpme.model.Helper;
 import com.example.helpme.model.User;
 import com.google.android.gms.tasks.OnCanceledListener;
@@ -19,6 +21,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+
 import java.util.Objects;
 import java.util.regex.Pattern;
 
@@ -28,7 +31,7 @@ public class Profile extends AppCompatActivity {
     private String fullNameText,emailText,passWordText,carTypeOfExperienceText,carColorExpLevelText,carModelOrLocationText,phoneNumberText,savedType;
     private SharedPreferences profilePref;
     private ProgressBar progressProfile;
-    Button editProfileBtn;
+    private Button editProfileBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -1,8 +1,6 @@
 package com.example.helpme;
 
 
-import android.Manifest;
-import android.app.NotificationChannel;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -11,10 +9,12 @@ import android.location.LocationManager;
 import android.os.IBinder;
 import android.util.Log;
 import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
+import com.example.helpme.model.HelperLocation;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
@@ -23,19 +23,10 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.karumi.dexter.Dexter;
-import com.karumi.dexter.PermissionToken;
-import com.karumi.dexter.listener.PermissionDeniedResponse;
-import com.karumi.dexter.listener.PermissionGrantedResponse;
-import com.karumi.dexter.listener.PermissionRequest;
-import com.karumi.dexter.listener.single.PermissionListener;
 
-import java.util.HashMap;
 
 public class LocationService extends Service {
 
-    FusedLocationProviderClient fusedLocationProviderClient;
-    LocationRequest locationRequest;
     private static final int CHANNEL_ID=100;
     public LocationService() {
 
@@ -95,8 +86,8 @@ public class LocationService extends Service {
     //get user location
     private void fetchLocation() {
 
-        fusedLocationProviderClient= new FusedLocationProviderClient(getApplicationContext());
-        locationRequest=new LocationRequest();
+        FusedLocationProviderClient fusedLocationProviderClient = new FusedLocationProviderClient(getApplicationContext());
+        LocationRequest locationRequest = new LocationRequest();
 
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         locationRequest.setFastestInterval(2000);
@@ -105,8 +96,6 @@ public class LocationService extends Service {
             @Override
             public void onLocationResult(LocationResult locationResult) {
                 super.onLocationResult(locationResult);
-                Log.i("curLat",String.valueOf(locationResult.getLastLocation().getLatitude()));
-                Log.i("curLon",String.valueOf(locationResult.getLastLocation().getLongitude()));
 
                 Toast.makeText(getApplicationContext(), locationResult.getLastLocation()
                         .getLatitude() +" "+ locationResult.getLastLocation().getLongitude(),Toast.LENGTH_SHORT).show();
@@ -120,12 +109,16 @@ public class LocationService extends Service {
     private void saveHelperLocation(Double lat, Double lon){
         SharedPreferences preferences=getSharedPreferences("login",MODE_PRIVATE);
         String email=preferences.getString("email","empty");
+
         FirebaseDatabase database=FirebaseDatabase.getInstance();
         DatabaseReference reference=database.getReference("ActiveLocation");
-        HashMap<String,Double> loc=new HashMap<>();
-        loc.put("lat",lat);
-        loc.put("lon",lon);
-        reference.child(email).setValue(loc).addOnSuccessListener(new OnSuccessListener<Void>() {
+
+        HelperLocation location=new HelperLocation();
+        location.setLatitude(lat);
+        location.setLongitude(lon);
+        location.setKey(email);
+
+        reference.child(email).setValue(location).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
                 Log.i("Statues","Successful");

@@ -1,19 +1,17 @@
 package com.example.helpme;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBarDrawerToggle;
-import androidx.core.view.GravityCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.fragment.app.FragmentActivity;
-
 import android.Manifest;
 import android.app.Dialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.PorterDuff;
-import android.location.Geocoder;
 import android.location.Location;
+import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -23,10 +21,17 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AlertDialog;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.FragmentActivity;
+
+import com.example.helpme.model.HelperLocation;
 import com.example.helpme.model.User;
 import com.example.helpme.model.UserOrder;
 import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -50,14 +55,12 @@ import com.karumi.dexter.listener.PermissionGrantedResponse;
 import com.karumi.dexter.listener.PermissionRequest;
 import com.karumi.dexter.listener.single.PermissionListener;
 
-import java.util.Locale;
 import java.util.Objects;
 
 public class UserHome extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
     private DrawerLayout drawerLayout;
-    private ImageView drawerUser;
     private EditText userLoc;
     private Location mLastKnownLocation;
     private final int DEFAULT_ZOOM=15;
@@ -69,9 +72,26 @@ public class UserHome extends FragmentActivity implements OnMapReadyCallback {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_home);
         drawerLayout=findViewById(R.id.home_user);
-        drawerUser=findViewById(R.id.drawerSwitchUser);
+        ImageView drawerUser = findViewById(R.id.drawerSwitchUser);
         ImageView locBtn = findViewById(R.id.getLocBtn);
         userLoc=findViewById(R.id.userLoc);
+
+        LocationManager lm = (LocationManager) getSystemService(Context. LOCATION_SERVICE ) ;
+
+        boolean gps_enabled;
+        boolean network_enabled;
+
+        assert lm != null;
+        gps_enabled = lm.isProviderEnabled(LocationManager. GPS_PROVIDER ) ;
+        network_enabled = lm.isProviderEnabled(LocationManager. NETWORK_PROVIDER ) ;
+
+        if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.M){
+            requestLocationPermission();
+        }
+        else{
+            if (!gps_enabled && !network_enabled)
+            openLocationSetting();
+        }
 
         locBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -98,7 +118,6 @@ public class UserHome extends FragmentActivity implements OnMapReadyCallback {
             @Override
             public void onClick(View v) {
                 drawerLayout.openDrawer(GravityCompat.START);
-                drawerUser.setVisibility(View.GONE);
             }
         });
 
@@ -106,7 +125,6 @@ public class UserHome extends FragmentActivity implements OnMapReadyCallback {
             @Override
             public void onClick(View v) {
                 drawerLayout.closeDrawer(GravityCompat.START);
-                drawerUser.setVisibility(View.VISIBLE);
             }
         });
 
@@ -125,6 +143,8 @@ public class UserHome extends FragmentActivity implements OnMapReadyCallback {
 
                     case R.id.order_layout:
                         Toast.makeText(getApplicationContext(),"Order Layout",Toast.LENGTH_SHORT).show();
+                        Intent intentOrder=new Intent(getBaseContext(),OldOrder.class);
+                        startActivity(intentOrder);
                         break;
 
                     case R.id.logout_user:
@@ -161,11 +181,80 @@ public class UserHome extends FragmentActivity implements OnMapReadyCallback {
      * it inside the SupportMapFragment. This method will only be triggered once the user has
      * installed Google Play services and returned to the app.
      */
+    private LatLng latLng;
+
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         mMap.setMyLocationEnabled(true);
+
+        FirebaseDatabase databaseHelperLoc=FirebaseDatabase.getInstance();
+        DatabaseReference referenceHelperLoc=databaseHelperLoc.getReference();
+        referenceHelperLoc.child("ActiveLocation").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()){
+                    HelperLocation location=dataSnapshot1.getValue(HelperLocation.class);
+                    if (location != null) {
+                        latLng=new LatLng(location.getLatitude(),location.getLongitude());
+                        mMap.addMarker(new MarkerOptions().position(latLng).title(location.getKey()));
+                    }
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Toast.makeText(getApplicationContext(),databaseError.toString(),Toast.LENGTH_LONG).show();
+            }
+        });
     }
+
+
+    private void requestLocationPermission() {
+        Dexter.withActivity(UserHome.this).withPermission(Manifest.permission.ACCESS_FINE_LOCATION).withListener(new PermissionListener() {
+            @Override
+            public void onPermissionGranted(PermissionGrantedResponse response) {
+                Toast.makeText(getApplicationContext(),"Success",Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onPermissionDenied(PermissionDeniedResponse response) {
+                if (response.isPermanentlyDenied()){
+                    openLocationSetting();
+                }
+            }
+            @Override
+            public void onPermissionRationaleShouldBeShown(PermissionRequest permission, PermissionToken token) {
+                token.continuePermissionRequest();
+            }
+        });
+    }
+
+    private void openLocationSetting(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(UserHome.this);
+        builder.setTitle("Need Permissions");
+        builder.setMessage("This app needs permission to use this feature. You can grant them in app settings.");
+        builder.setPositiveButton("GOTO SETTINGS", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+                openSettings();
+            }
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+        builder.show();
+
+    }
+
+    private void openSettings(){
+        Intent intent=new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+        startActivity(intent);
+    }
+
 
     private void getDeviceLocation() {
         FusedLocationProviderClient mFusedLocationProviderClient=new FusedLocationProviderClient(this);

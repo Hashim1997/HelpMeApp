@@ -18,7 +18,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
-        <activity android:name=".OldOrder"></activity>
+        <activity android:name=".OldOrder" />
 
         <service
             android:name=".LocationService"

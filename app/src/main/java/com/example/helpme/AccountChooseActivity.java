@@ -1,26 +1,24 @@
 package com.example.helpme;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.text.HtmlCompat;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.text.HtmlCompat;
+
 public class AccountChooseActivity extends AppCompatActivity {
 
-    TextView quoteText;
-    Button userSelect,helperSelect;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_account_choose);
 
-        quoteText=findViewById(R.id.qouteText);
-        userSelect=findViewById(R.id.userBtn);
-        helperSelect=findViewById(R.id.helperBtn);
+        TextView quoteText = findViewById(R.id.qouteText);
+        Button userSelect = findViewById(R.id.userBtn);
+        Button helperSelect = findViewById(R.id.helperBtn);
 
         String car = "<font color=\'#000000\'>CAR</font>";
         String hands = "<font color=\'#000000\'>HANDS</font>";

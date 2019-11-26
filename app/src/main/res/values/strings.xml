@@ -17,6 +17,7 @@
     <string name="car_model">CAR MODEL</string>
     <string name="phone">PHONE</string>
     <string name="signup">SIGNUP</string>
+    <string name="completeBtn">Complete Button</string>
     <string name="experience_type">TYPE OF EXPERIENCE</string>
     <string name="experience_level">LEVEL OF EXPERIENCE</string>
     <string name="location">LOCATION</string>
@@ -26,9 +27,13 @@
     <string name="title_activity_user_location">Map</string>
     <string name="profile">PROFILE</string>
     <string name="order">ORDERS</string>
+    <string name="reset">Reset Password</string>
+    <string name="resetTi">Reset</string>
+    <string name="re_password">re-Password</string>
     <string name="logout">LOGOUT</string>
     <string name="menu_draw">MENU BUTTON</string>
     <string name="open">OPEN</string>
+    <string name="new_password">NEW PASSWORD</string>
     <string name="close">CLOSE</string>
     <string name="locBtn">LOCATION BUTTON</string>
     <string name="title_activity_user_home">Map</string>
