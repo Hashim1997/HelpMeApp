@@ -6,7 +6,8 @@ public class UserOrder {
     private String carType;
     private String carColor;
     private String email;
-    private String key;
+    private String helperID;
+    private boolean state;
     private double longitude;
     private double latitude;
 
@@ -68,11 +69,19 @@ public class UserOrder {
         this.carColor = carColor;
     }
 
-    public String getKey() {
-        return key;
+    public boolean isState() {
+        return state;
     }
 
-    public void setKey(String key) {
-        this.key = key;
+    public void setState(boolean state) {
+        this.state = state;
+    }
+
+    public String getHelperID() {
+        return helperID;
+    }
+
+    public void setHelperID(String helperID) {
+        this.helperID = helperID;
     }
 }

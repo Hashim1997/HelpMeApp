@@ -9,6 +9,7 @@ public class Helper {
     private String levelOfExperience;
     private String typeOfExperience;
     private String location;
+    private int rate;
 
 
     public Helper(){}
@@ -67,5 +68,13 @@ public class Helper {
 
     public void setLocation(String location) {
         this.location = location;
+    }
+
+    public int getRate() {
+        return rate;
+    }
+
+    public void setRate(int rate) {
+        this.rate = rate;
     }
 }

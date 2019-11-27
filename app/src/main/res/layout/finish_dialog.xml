@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:minWidth="270dp"
+    android:background="@color/black">
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/feedback"
+        android:fontFamily="@font/bungee_regular"
+        android:textSize="16sp"
+        android:layout_marginBottom="15dp"
+        android:textColor="@color/white"/>
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="15dp"
+        android:contentDescription="@string/feedback"
+        android:src="@mipmap/ic_feedback"/>
+    <TextView
+        android:id="@+id/helperFinish"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/name_ex"
+        android:layout_marginBottom="15dp"
+        android:fontFamily="@font/bungee_regular"
+        android:textColor="@color/white"/>
+    <TextView
+        android:id="@+id/helperExpFinish"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/bungee_regular"
+        android:layout_marginBottom="15dp"
+        android:text="@string/experience"
+        android:textColor="@color/yellow" />
+    <RatingBar
+        android:id="@+id/helperRate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:numStars="4"
+        android:background="@color/white"
+        android:clickable="false"
+        android:layout_marginBottom="15dp"
+        android:progressTint="@color/yellow"
+        android:rating="1" />
+
+    <Button
+        android:id="@+id/doneBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="45dp"
+        android:background="@color/yellow_alpha"
+        android:fontFamily="@font/bungee_regular"
+        android:text="@string/done"
+        android:textColor="@color/red"
+        android:textSize="18sp" />
+
+</LinearLayout>

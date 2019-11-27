@@ -23,6 +23,8 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -37,12 +39,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.karumi.dexter.Dexter;
-import com.karumi.dexter.PermissionToken;
-import com.karumi.dexter.listener.PermissionDeniedResponse;
-import com.karumi.dexter.listener.PermissionGrantedResponse;
-import com.karumi.dexter.listener.PermissionRequest;
-import com.karumi.dexter.listener.single.PermissionListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,33 +50,13 @@ public class HelperHome extends AppCompatActivity {
     private DrawerLayout drawerLayout;
     private static final int REQUEST_CODE=101;
     private String email;
+    public static final int FINE_LOCATION_PERMISSION = 101;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_helper_home);
 
-        LocationManager lm = (LocationManager) getSystemService(Context. LOCATION_SERVICE ) ;
-
-        boolean gps_enabled;
-        boolean network_enabled;
-
-        assert lm != null;
-        gps_enabled = lm.isProviderEnabled(LocationManager. GPS_PROVIDER ) ;
-        network_enabled = lm.isProviderEnabled(LocationManager. NETWORK_PROVIDER ) ;
-
-        Intent intentService=new Intent(getApplicationContext(),LocationService.class);
-        if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.M){
-            requestLocationPermission();
-            startService(intentService);
-        }
-        else{
-
-            if (!gps_enabled && !network_enabled)
-                openLocationSetting();
-
-            startService(intentService);
-        }
 
         helpOrderRecycler=findViewById(R.id.orderList);
         ImageView drawerImage = findViewById(R.id.drawerSwitch);
@@ -88,6 +64,8 @@ public class HelperHome extends AppCompatActivity {
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.open, R.string.close);
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
+
+        requestLocationPermission();
 
         SharedPreferences sharedPreferences=getSharedPreferences("login",MODE_PRIVATE);
         final SharedPreferences.Editor editor=sharedPreferences.edit();
@@ -154,9 +132,8 @@ public class HelperHome extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot dataSnapshot1: dataSnapshot.getChildren()){
+
                     UserOrder order=dataSnapshot1.getValue(UserOrder.class);
-                    assert order != null;
-                    order.setKey(dataSnapshot1.getKey());
                     orderList.add(order);
                 }
                 retrieveHelperData(email,orderList);
@@ -167,30 +144,38 @@ public class HelperHome extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(),databaseError.toString(),Toast.LENGTH_LONG).show();
             }
         });
-
-
-
-
     }
 
+
     private void requestLocationPermission() {
-        Dexter.withActivity(HelperHome.this).withPermission(Manifest.permission.ACCESS_FINE_LOCATION).withListener(new PermissionListener() {
-            @Override
-            public void onPermissionGranted(PermissionGrantedResponse response) {
-                startService(new Intent(getApplicationContext(),LocationService.class));
-            }
 
-            @Override
-            public void onPermissionDenied(PermissionDeniedResponse response) {
-                if (response.isPermanentlyDenied()){
-                    openLocationSetting();
-                }
-            }
-            @Override
-            public void onPermissionRationaleShouldBeShown(PermissionRequest permission, PermissionToken token) {
+        int locationFinePermission = ContextCompat.checkSelfPermission(HelperHome.this, Manifest.permission.ACCESS_FINE_LOCATION);
+        LocationManager lm = (LocationManager) getSystemService(Context. LOCATION_SERVICE ) ;
 
+        boolean gps_enabled;
+        boolean network_enabled;
+
+        assert lm != null;
+        gps_enabled = lm.isProviderEnabled(LocationManager. GPS_PROVIDER ) ;
+        network_enabled = lm.isProviderEnabled(LocationManager. NETWORK_PROVIDER ) ;
+
+        Intent intentService=new Intent(getApplicationContext(),LocationService.class);
+        if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.M){
+            if (locationFinePermission != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(HelperHome.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, FINE_LOCATION_PERMISSION);
+                startService(intentService);
             }
-        });
+            else
+            startService(intentService);
+        }
+        else{
+            if (!gps_enabled && !network_enabled){
+                openLocationSetting();
+                startService(intentService);
+            }
+            else
+            startService(intentService);
+        }
     }
 
     private void openLocationSetting(){

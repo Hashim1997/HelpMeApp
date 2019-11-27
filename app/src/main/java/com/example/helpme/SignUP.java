@@ -118,6 +118,7 @@ public class SignUP extends AppCompatActivity {
                         helper.setTypeOfExperience(typeOfExperienceText);
                         helper.setLevelOfExperience(levelOfExperienceText);
                         helper.setLocation(locationText);
+                        helper.setRate(0);
                         checkHelperAccountExist(helper.getEmail(),helper);
                     }
                     else

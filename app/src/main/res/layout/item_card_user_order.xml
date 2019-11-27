@@ -20,10 +20,10 @@
                 android:layout_marginTop="20dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="MOHAMMAD ALI" />
+                android:text="@string/name_ex" />
             <TextView
                 android:id="@+id/helperExperience"
-                android:text="CAR MECHANIC"
+                android:text="@string/experience"
                 android:textColor="@color/yellow"
                 android:layout_gravity="center"
                 android:fontFamily="@font/bungee_regular"

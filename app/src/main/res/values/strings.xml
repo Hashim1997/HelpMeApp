@@ -3,6 +3,9 @@
     <string name="app_title">HELP ME APP</string>
     <string name="helper">HELPER</string>
     <string name="user">USER</string>
+    <string name="done">DONE</string>
+    <string name="feedback">TELL US YOUR FEEDBACK</string>
+    <string name="call">CALL HELPER</string>
     <string name="quote">YOUR CAR IN RIGHT HAND</string>
     <string name="choose">CHOOSE YOUR ACCOUNT</string>
     <string name="email">EMAIL</string>
@@ -35,6 +38,9 @@
     <string name="open">OPEN</string>
     <string name="new_password">NEW PASSWORD</string>
     <string name="close">CLOSE</string>
+    <string name="experience">CAR MECHANIC</string>
+    <string name="name_ex">MOHAMMAD ALI</string>
     <string name="locBtn">LOCATION BUTTON</string>
     <string name="title_activity_user_home">Map</string>
+    <string name="helper_info_title">YOUR HELPER IN HIS WAY TO YOU</string>
 </resources>
