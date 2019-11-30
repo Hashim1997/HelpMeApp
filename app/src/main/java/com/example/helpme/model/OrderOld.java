@@ -2,7 +2,7 @@ package com.example.helpme.model;
 
 public class OrderOld {
     private String HelperName;
-    private int orderRate;
+    private float orderRate;
     private String HelperExp;
 
     public OrderOld() {
@@ -16,11 +16,11 @@ public class OrderOld {
         HelperName = helperName;
     }
 
-    public int getOrderRate() {
+    public float getOrderRate() {
         return orderRate;
     }
 
-    public void setOrderRate(int orderRate) {
+    public void setOrderRate(float orderRate) {
         this.orderRate = orderRate;
     }
 

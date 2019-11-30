@@ -11,6 +11,7 @@
         android:text="@string/feedback"
         android:fontFamily="@font/bungee_regular"
         android:textSize="16sp"
+        android:layout_marginTop="15dp"
         android:layout_marginBottom="15dp"
         android:textColor="@color/white"/>
     <ImageView
@@ -36,7 +37,7 @@
         android:text="@string/experience"
         android:textColor="@color/yellow" />
     <RatingBar
-        android:id="@+id/helperRate"
+        android:id="@+id/helperRateFinish"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"

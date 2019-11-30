@@ -18,6 +18,7 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -36,6 +37,7 @@ import androidx.fragment.app.FragmentActivity;
 
 import com.example.helpme.model.Helper;
 import com.example.helpme.model.HelperLocation;
+import com.example.helpme.model.OrderOld;
 import com.example.helpme.model.User;
 import com.example.helpme.model.UserOrder;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -56,6 +58,10 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
 import java.util.Objects;
 
 public class UserHome extends FragmentActivity implements OnMapReadyCallback {
@@ -69,6 +75,15 @@ public class UserHome extends FragmentActivity implements OnMapReadyCallback {
     private Helper helper1;
     public static final int FINE_LOCATION_PERMISSION = 101;
     public static final int CALL_PERMISSION = 100;
+    private TextView helperName,helperExp;
+    private RatingBar helperRate;
+    private ImageView callBtn;
+    private String name,experience;
+    private float rateHelper;
+    private RatingBar helperRateOrder;
+    private int counter=0;
+    private String dataDesc;
+    private SupportMapFragment mapFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,13 +94,26 @@ public class UserHome extends FragmentActivity implements OnMapReadyCallback {
         ImageView locBtn = findViewById(R.id.getLocBtn);
         userLoc = findViewById(R.id.userLoc);
 
-        requestLocationPermission();
+        final Dialog dialogDesc=new Dialog(UserHome.this);
+        dialogDesc.setContentView(R.layout.add_description_dialog);
+        dialogDesc.setTitle("Add Problem Description");
+        final EditText textDesc=dialogDesc.findViewById(R.id.description);
+        Button submitDesc=dialogDesc.findViewById(R.id.doneDescBtn);
 
+        submitDesc.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dataDesc=textDesc.getText().toString().trim();
+                getDeviceLocation(dataDesc);
+                dialogDesc.dismiss();
+            }
+        });
         locBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (userLoc.getText().toString().equals(""))
-                    getDeviceLocation();
+                if (userLoc.getText().toString().equals("")) {
+                    dialogDesc.show();
+                }
                 else
                     Toast.makeText(getApplicationContext(), userLoc.getText().toString(), Toast.LENGTH_SHORT).show();
             }
@@ -151,11 +179,33 @@ public class UserHome extends FragmentActivity implements OnMapReadyCallback {
             }
         });
 
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+        mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
-        assert mapFragment != null;
-        mapFragment.getMapAsync(this);
+        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+        int locationFinePermission = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
+        LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+
+        boolean gps_enabled;
+        boolean network_enabled;
+
+        assert lm != null;
+        gps_enabled = lm.isProviderEnabled(LocationManager.GPS_PROVIDER);
+        network_enabled = lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (locationFinePermission != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(UserHome.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, FINE_LOCATION_PERMISSION);
+            }
+            else {
+
+                assert mapFragment != null;
+                mapFragment.getMapAsync(this);
+            }
+        } else {
+            if (!gps_enabled && !network_enabled)
+                openLocationSetting();
+        }
 
     }
 
@@ -184,6 +234,7 @@ public class UserHome extends FragmentActivity implements OnMapReadyCallback {
                 for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
                     HelperLocation location = dataSnapshot1.getValue(HelperLocation.class);
                     if (location != null) {
+                        mMap.clear();
                         latLng = new LatLng(location.getLatitude(), location.getLongitude());
                         mMap.addMarker(new MarkerOptions().position(latLng).title(location.getKey()));
                     }
@@ -199,25 +250,7 @@ public class UserHome extends FragmentActivity implements OnMapReadyCallback {
 
     private void requestLocationPermission() {
 
-        int locationFinePermission = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
-        LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
-        boolean gps_enabled;
-        boolean network_enabled;
-
-        assert lm != null;
-        gps_enabled = lm.isProviderEnabled(LocationManager.GPS_PROVIDER);
-        network_enabled = lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (locationFinePermission != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(UserHome.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, FINE_LOCATION_PERMISSION);
-            }
-        } else {
-            if (!gps_enabled && !network_enabled)
-                openLocationSetting();
-        }
     }
 
     @Override
@@ -228,7 +261,7 @@ public class UserHome extends FragmentActivity implements OnMapReadyCallback {
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     Toast.makeText(getApplicationContext(), "Successful Location permission", Toast.LENGTH_SHORT).show();
                 } else
-                    Toast.makeText(getApplicationContext(), "Sorry the will not work without permission", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "Sorry map will not work without permission", Toast.LENGTH_LONG).show();
                 return;
             }
 
@@ -236,7 +269,7 @@ public class UserHome extends FragmentActivity implements OnMapReadyCallback {
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     Toast.makeText(getApplicationContext(), "Successful Call permission", Toast.LENGTH_SHORT).show();
                 } else
-                    Toast.makeText(getApplicationContext(), "Sorry the will not work without permission", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "Sorry you will not call without permission", Toast.LENGTH_LONG).show();
             }
         }
     }
@@ -267,7 +300,8 @@ public class UserHome extends FragmentActivity implements OnMapReadyCallback {
         startActivity(intent);
     }
 
-    private void getDeviceLocation() {
+    private void getDeviceLocation(final String desc) {
+
         FusedLocationProviderClient mFusedLocationProviderClient = new FusedLocationProviderClient(this);
         try {
             Task<Location> locationResult = mFusedLocationProviderClient.getLastLocation();
@@ -281,7 +315,7 @@ public class UserHome extends FragmentActivity implements OnMapReadyCallback {
                         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
                                 new LatLng(mLastKnownLocation.getLatitude(),
                                         mLastKnownLocation.getLongitude()), DEFAULT_ZOOM));
-                        sendOrder(mLastKnownLocation.getLatitude(), mLastKnownLocation.getLongitude());
+                        sendOrder(mLastKnownLocation.getLatitude(), mLastKnownLocation.getLongitude(), desc);
                     } else {
                         Log.d("State", "Current location is null. Using defaults.");
                         Log.e("State", "Exception: %s", task.getException());
@@ -297,7 +331,7 @@ public class UserHome extends FragmentActivity implements OnMapReadyCallback {
         }
     }
 
-    private void sendOrder(final Double lat, final Double lon) {
+    private void sendOrder(final Double lat, final Double lon, final String dataDesc) {
 
         SharedPreferences preferences = getSharedPreferences("login", MODE_PRIVATE);
         String email = preferences.getString("email", "empty");
@@ -316,7 +350,9 @@ public class UserHome extends FragmentActivity implements OnMapReadyCallback {
                     order.setLongitude(lon);
                     order.setLatitude(lat);
                     order.setEmail(user.getEmail());
+                    order.setDescription(dataDesc);
                     order.setState(false);
+                    order.setComplete(false);
                     order.setHelperID("empty");
                     saveOrder(order);
                 }
@@ -356,14 +392,16 @@ public class UserHome extends FragmentActivity implements OnMapReadyCallback {
         dialog.setCancelable(false);
         dialog.show();
 
-        FirebaseDatabase databaseOrder = FirebaseDatabase.getInstance();
+        final FirebaseDatabase databaseOrder = FirebaseDatabase.getInstance();
         DatabaseReference referenceOrder = databaseOrder.getReference();
-        referenceOrder.child(order.getEmail()).addValueEventListener(new ValueEventListener() {
+        referenceOrder.child("Orders").child(order.getEmail()).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (order.isState()) {
+                UserOrder order1=dataSnapshot.getValue(UserOrder.class);
+                assert order1 != null;
+                if (order1.isState()) {
                     dialog.cancel();
-                    viewInfoDialog(order.getHelperID());
+                    viewInfoDialog(order1.getHelperID(), order1.getEmail());
                 }
             }
 
@@ -375,21 +413,23 @@ public class UserHome extends FragmentActivity implements OnMapReadyCallback {
         });
     }
 
-    private void viewInfoDialog(String helper) {
-        Dialog dialog = new Dialog(UserHome.this);
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialog.setContentView(R.layout.helper_info_dialog);
-        dialog.setCanceledOnTouchOutside(false);
-        dialog.setCancelable(false);
+    private void viewInfoDialog(String helper, final String order) {
+
+        final Dialog dialog1 = new Dialog(UserHome.this);
+        dialog1.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog1.setContentView(R.layout.helper_info_dialog);
+        dialog1.setCanceledOnTouchOutside(false);
+        dialog1.setCancelable(false);
+        dialog1.show();
 
 
-        final TextView helperName = dialog.findViewById(R.id.helperName);
-        final TextView helperExp = dialog.findViewById(R.id.helperExp);
-        final RatingBar helperRate = dialog.findViewById(R.id.helperRate);
-        final ImageView callBtn = dialog.findViewById(R.id.callHelper);
+        helperName = dialog1.findViewById(R.id.helperName);
+        helperExp = dialog1.findViewById(R.id.helperExp);
+        helperRate = dialog1.findViewById(R.id.helperRate);
+        callBtn = dialog1.findViewById(R.id.callHelper);
 
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference reference = database.getReference();
+        final DatabaseReference reference = database.getReference();
         reference.child("Helpers").child(helper).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -406,7 +446,6 @@ public class UserHome extends FragmentActivity implements OnMapReadyCallback {
                         }
                     });
                 }
-
             }
 
             @Override
@@ -415,10 +454,86 @@ public class UserHome extends FragmentActivity implements OnMapReadyCallback {
             }
         });
 
+        reference.child("Orders").child(order).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                UserOrder order2=dataSnapshot.getValue(UserOrder.class);
+                if (order2 != null && order2.isComplete()) {
+                    if (counter<=0)
+                    viewFeedOrder(helper1);
+                    counter++;
+                    dialog1.cancel();
+                }
+            }
 
-        dialog.show();
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Toast.makeText(getApplicationContext(),databaseError.toString(),Toast.LENGTH_LONG).show();
+                dialog1.cancel();
+            }
+        });
     }
 
+    private void viewFeedOrder(Helper helper2) {
+        final Dialog dialogFinish=new Dialog(UserHome.this);
+        dialogFinish.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialogFinish.setContentView(R.layout.finish_dialog);
+        dialogFinish.setCancelable(false);
+        dialogFinish.setCanceledOnTouchOutside(false);
+
+        final TextView helperName=dialogFinish.findViewById(R.id.helperFinish);
+        final TextView helperEx=dialogFinish.findViewById(R.id.helperExpFinish);
+        helperRateOrder=dialogFinish.findViewById(R.id.helperRateFinish);
+        Button doneBtn=dialogFinish.findViewById(R.id.doneBtn);
+
+        helperName.setText(helper2.getFullName());
+        helperEx.setText(helper2.getTypeOfExperience());
+        doneBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                name=helperName.getText().toString().trim();
+                experience=helperEx.getText().toString().trim();
+                rateHelper=helperRateOrder.getRating();
+                sendFeedBack(name, experience, rateHelper);
+                dialogFinish.dismiss();
+
+            }
+        });
+
+        dialogFinish.show();
+    }
+
+    private void sendFeedBack(String nameHelper, String exHelper, float rateHelper) {
+
+        String format="dd-MM-yyyy";
+        Date c= Calendar.getInstance().getTime();
+        SimpleDateFormat dateFormat=new SimpleDateFormat(format,Locale.US);
+        String formatDate=dateFormat.format(c);
+
+        SharedPreferences preferences = getSharedPreferences("login", MODE_PRIVATE);
+        String email = preferences.getString("email", "empty");
+
+        OrderOld old=new OrderOld();
+        old.setOrderRate(rateHelper);
+        old.setHelperExp(exHelper);
+        old.setHelperName(nameHelper);
+
+        FirebaseDatabase databaseFeed=FirebaseDatabase.getInstance();
+        DatabaseReference referenceFeed=databaseFeed.getReference();
+        referenceFeed.child("OldOrder").child(email).child(formatDate).setValue(old).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                Toast.makeText(getApplicationContext(),"SuccessFul",Toast.LENGTH_SHORT).show();
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(getApplicationContext(),e.toString(),Toast.LENGTH_LONG).show();
+            }
+        });
+
+    }
 
     private void makeACall(String phone) {
         Intent intentCall = new Intent(Intent.ACTION_CALL);
@@ -426,7 +541,6 @@ public class UserHome extends FragmentActivity implements OnMapReadyCallback {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (checkSelfPermission(Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(UserHome.this,new String[]{Manifest.permission.CALL_PHONE},CALL_PERMISSION);
-                startActivity(intentCall);
             }
             else
                 startActivity(intentCall);

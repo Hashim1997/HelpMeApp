@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center"
+    android:minWidth="250dp"
     android:orientation="vertical"
-    android:minWidth="270dp"
     android:background="@color/black">
 
     <TextView
@@ -13,18 +12,21 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:fontFamily="@font/bungee_regular"
+        android:textAlignment="center"
+        android:padding="10dp"
+        android:layout_marginTop="15dp"
         android:layout_marginBottom="20dp"
         android:text="@string/helper_info_title"
         android:textColor="@color/white"
         android:textSize="16sp" />
 
     <ImageView
-        android:id="@+id/imageView"
+        android:id="@+id/imageTrue"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="20dp"
         android:contentDescription="@string/approve"
-        app:srcCompat="@mipmap/ic_accept" />
+        android:src="@mipmap/ic_accept" />
 
     <TextView
         android:id="@+id/helperName"
@@ -34,8 +36,7 @@
         android:text="@string/name_ex"
         android:textColor="@color/white"
         android:layout_marginBottom="20dp"
-        android:textSize="16sp"
-        />
+        android:textSize="16sp" />
 
     <TextView
         android:id="@+id/helperExp"
@@ -50,6 +51,7 @@
         android:id="@+id/helperRate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:background="@color/white"
         android:layout_gravity="center"
         android:numStars="4"
         android:clickable="false"
@@ -62,8 +64,9 @@
         android:layout_width="wrap_content"
         android:clickable="true"
         android:focusable="true"
+        android:layout_marginBottom="20dp"
         android:layout_height="wrap_content"
         android:contentDescription="@string/call"
-        app:srcCompat="@mipmap/ic_call" />
+        android:src="@mipmap/ic_call" />
 
 </LinearLayout>

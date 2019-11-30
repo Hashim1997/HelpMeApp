@@ -134,7 +134,8 @@ public class HelperHome extends AppCompatActivity {
                 for (DataSnapshot dataSnapshot1: dataSnapshot.getChildren()){
 
                     UserOrder order=dataSnapshot1.getValue(UserOrder.class);
-                    orderList.add(order);
+                    if (order != null && !order.isComplete())
+                        orderList.add(order);
                 }
                 retrieveHelperData(email,orderList);
             }
@@ -145,7 +146,6 @@ public class HelperHome extends AppCompatActivity {
             }
         });
     }
-
 
     private void requestLocationPermission() {
 
@@ -219,8 +219,6 @@ public class HelperHome extends AppCompatActivity {
         helpOrderRecycler.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
     }
 
-
-
     private void retrieveHelperData(String email, final List<UserOrder> orders){
         FirebaseDatabase database=FirebaseDatabase.getInstance();
         DatabaseReference reference=database.getReference();
@@ -245,5 +243,4 @@ public class HelperHome extends AppCompatActivity {
             }
         });
     }
-
 }

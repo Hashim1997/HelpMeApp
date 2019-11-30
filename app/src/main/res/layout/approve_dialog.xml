@@ -5,7 +5,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:minWidth="270dp"
-
     android:background="@color/black"
     android:gravity="center">
     <TextView
@@ -38,6 +37,17 @@
         android:textSize="20sp"
         android:layout_marginBottom="20dp"
         android:text="BLACK"/>
+    <TextView
+        android:id="@+id/descriptionProblem"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="14sp"
+        android:padding="3dp"
+        android:textColor="@color/white"
+        android:textAlignment="center"
+        android:text="The problem is the tire is destroyed"
+        android:fontFamily="@font/bungee_regular"
+        android:layout_marginBottom="20dp"/>
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

@@ -1,13 +1,16 @@
 package com.example.helpme.model;
 
 public class UserOrder {
+
     private String fullName;
     private String location;
     private String carType;
     private String carColor;
     private String email;
     private String helperID;
+    private String description;
     private boolean state;
+    private boolean complete;
     private double longitude;
     private double latitude;
 
@@ -83,5 +86,21 @@ public class UserOrder {
 
     public void setHelperID(String helperID) {
         this.helperID = helperID;
+    }
+
+    public boolean isComplete() {
+        return complete;
+    }
+
+    public void setComplete(boolean complete) {
+        this.complete = complete;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:minWidth="270dp"
+    android:background="@color/dark">
+
+    <EditText
+        android:id="@+id/description"
+        android:layout_width="match_parent"
+        android:layout_height="117dp"
+        android:layout_margin="10dp"
+        android:background="@color/yellow_alpha"
+        android:ems="10"
+        android:importantForAutofill="no"
+        android:padding="5dp"
+        android:gravity="start|top"
+        android:hint="@string/description"
+        android:textColorHint="@color/red"
+        android:inputType="textMultiLine"
+        android:textAlignment="center"
+        android:textColor="@color/red"
+        android:textSize="22sp" />
+    <Button
+        android:id="@+id/doneDescBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="45dp"
+        android:layout_marginTop="30dp"
+        android:background="@color/yellow_alpha"
+        android:fontFamily="@font/bungee_regular"
+        android:text="@string/submit"
+        android:textColor="@color/red"
+        android:textSize="18sp" />
+
+
+</LinearLayout>

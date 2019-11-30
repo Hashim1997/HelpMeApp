@@ -4,9 +4,9 @@ import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.location.Location;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,8 +21,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.helpme.R;
 import com.example.helpme.UserLocation;
 import com.example.helpme.model.UserOrder;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.List;
+
+import static android.content.Context.MODE_PRIVATE;
 
 public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.ViewHolderOrder> {
 
@@ -53,7 +59,6 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.ViewHolderOr
         startPoint.setLatitude(order.getLatitude());
         startPoint.setLongitude(order.getLongitude());
         double distance =location.distanceTo(startPoint);
-        Log.i("distanceX",String.valueOf(distance));
         holder.nameUser.setText(order.getFullName()+" Needs Help");
         if (distance<=1000.0f){
             order.setLocation(String.valueOf(Math.round(distance)));
@@ -74,7 +79,7 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.ViewHolderOr
         holder.approveOrder.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                viewDialog(order);
+                viewDialog(order,position);
             }
         });
     }
@@ -84,24 +89,33 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.ViewHolderOr
         return userOrderList.size();
     }
 
-    private void viewDialog(final UserOrder order){
+    private void viewDialog(final UserOrder order, final int pos){
         final Dialog dialog=new Dialog(mContext);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setContentView(R.layout.approve_dialog);
         dialog.setCanceledOnTouchOutside(false);
         dialog.setCancelable(false);
 
-
+        SharedPreferences preferences=context.getSharedPreferences("login",MODE_PRIVATE);
+        final String email=preferences.getString("email","empty");
 
         TextView userName=dialog.findViewById(R.id.orderUserName);
         TextView carType=dialog.findViewById(R.id.orderCarType);
         TextView carColor=dialog.findViewById(R.id.orderCarColor);
+        TextView viewDesc=dialog.findViewById(R.id.descriptionProblem);
         ImageView viewLocationBtn=dialog.findViewById(R.id.locationBtn);
         ImageView completeBtn=dialog.findViewById(R.id.completeBtn);
 
         userName.setText(order.getFullName());
         carType.setText(order.getCarType());
         carColor.setText(order.getCarColor());
+        viewDesc.setText(order.getDescription());
+
+        FirebaseDatabase database=FirebaseDatabase.getInstance();
+        final DatabaseReference reference=database.getReference();
+
+        reference.child("Orders").child(order.getEmail()).child("state").setValue(true);
+        reference.child("Orders").child(order.getEmail()).child("helperID").setValue(email);
 
         viewLocationBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -120,7 +134,23 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.ViewHolderOr
         completeBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(context,"Completed",Toast.LENGTH_SHORT).show();
+
+                FirebaseDatabase databaseOrderOld=FirebaseDatabase.getInstance();
+                DatabaseReference referenceOld=databaseOrderOld.getReference();
+
+                referenceOld.child("Orders").child(order.getEmail()).child("complete").setValue(true).addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Toast.makeText(context,"SuccessFul",Toast.LENGTH_SHORT).show();
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(context,e.toString(),Toast.LENGTH_LONG).show();
+                    }
+                });
+
+                removeItem(pos);
                 dialog.cancel();
             }
         });
