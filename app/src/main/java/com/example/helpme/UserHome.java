@@ -83,6 +83,7 @@ public class UserHome extends FragmentActivity implements OnMapReadyCallback {
     private RatingBar helperRateOrder;
     private int counter=0;
     private String dataDesc;
+    private LatLng latLng;
     private SupportMapFragment mapFragment;
 
     @Override
@@ -198,11 +199,15 @@ public class UserHome extends FragmentActivity implements OnMapReadyCallback {
                 ActivityCompat.requestPermissions(UserHome.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, FINE_LOCATION_PERMISSION);
             }
             else {
-
                 assert mapFragment != null;
                 mapFragment.getMapAsync(this);
+                openSettings();
             }
         } else {
+
+            assert mapFragment != null;
+            mapFragment.getMapAsync(this);
+
             if (!gps_enabled && !network_enabled)
                 openLocationSetting();
         }
@@ -219,7 +224,6 @@ public class UserHome extends FragmentActivity implements OnMapReadyCallback {
      * it inside the SupportMapFragment. This method will only be triggered once the user has
      * installed Google Play services and returned to the app.
      */
-    private LatLng latLng;
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
@@ -248,11 +252,6 @@ public class UserHome extends FragmentActivity implements OnMapReadyCallback {
         });
     }
 
-    private void requestLocationPermission() {
-
-
-    }
-
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         switch (requestCode) {
@@ -260,6 +259,9 @@ public class UserHome extends FragmentActivity implements OnMapReadyCallback {
             case FINE_LOCATION_PERMISSION: {
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     Toast.makeText(getApplicationContext(), "Successful Location permission", Toast.LENGTH_SHORT).show();
+                    assert mapFragment != null;
+                    mapFragment.getMapAsync(this);
+                    openSettings();
                 } else
                     Toast.makeText(getApplicationContext(), "Sorry map will not work without permission", Toast.LENGTH_LONG).show();
                 return;

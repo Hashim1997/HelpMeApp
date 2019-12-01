@@ -131,8 +131,8 @@ public class HelperHome extends AppCompatActivity {
         referenceOrder.child("Orders").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                orderList.clear();
                 for (DataSnapshot dataSnapshot1: dataSnapshot.getChildren()){
-
                     UserOrder order=dataSnapshot1.getValue(UserOrder.class);
                     if (order != null && !order.isComplete())
                         orderList.add(order);
@@ -163,15 +163,18 @@ public class HelperHome extends AppCompatActivity {
         if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.M){
             if (locationFinePermission != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(HelperHome.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, FINE_LOCATION_PERMISSION);
-                startService(intentService);
             }
-            else
-            startService(intentService);
+            else{
+                if (!gps_enabled && !network_enabled){
+                    openLocationSetting();
+                }
+                else
+                    startService(intentService);
+            }
         }
         else{
             if (!gps_enabled && !network_enabled){
                 openLocationSetting();
-                startService(intentService);
             }
             else
             startService(intentService);
@@ -202,13 +205,14 @@ public class HelperHome extends AppCompatActivity {
     private void openSettings(){
         Intent intent=new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
         startActivity(intent);
+        startService(new Intent(getApplicationContext(),LocationService.class));
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == REQUEST_CODE) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                startService(new Intent(getApplicationContext(),LocationService.class));
+                openSettings();
             }
         }
     }
