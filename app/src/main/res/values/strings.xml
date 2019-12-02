@@ -4,10 +4,14 @@
     <string name="helper">HELPER</string>
     <string name="user">USER</string>
     <string name="done">DONE</string>
+    <string name="about">ABOUT</string>
+    <string name="feedback_menu">FEEDBACK</string>
     <string name="feedback">TELL US YOUR FEEDBACK</string>
     <string name="call">CALL HELPER</string>
     <string name="quote">YOUR CAR IN RIGHT HAND</string>
     <string name="submit">SUBMIT</string>
+    <string name="api_key_place">AIzaSyBnMC4TLIgor487XbJ8LhUGIx6CkZnosHE</string>
+    <string name="back">BACK BUTTON</string>
     <string name="choose">CHOOSE YOUR ACCOUNT</string>
     <string name="email">EMAIL</string>
     <string name="password">PASSWORD</string>
@@ -44,5 +48,63 @@
     <string name="name_ex">MOHAMMAD ALI</string>
     <string name="locBtn">LOCATION BUTTON</string>
     <string name="title_activity_user_home">Map</string>
+    <string name="arabic">ARABIC</string>
+    <string name="how">HOW IT WORK</string>
+    <string name="english">ENGLISH</string>
     <string name="helper_info_title">YOUR HELPER IN HIS WAY TO YOU</string>
+    <string name="about_app">
+        Help Me is an android app to Help people who had
+        an issues with their cars while in the road so they can request help
+        from nearby helper to fix that cars
+    </string>
+    <string name="how_to_use_user">
+        1-Create an Account using your email and then fill your info.\n\n
+        2-Then a new Activity shown with map to locate your location.\n\n
+        3-Click in location button and fill the problem in the box.\n\n
+        4-Then Submit your order, and new dialog will show that wait response.\n\n
+        5-When helper response, new dialog appear for helper info.\n\n
+        6-After helper arrived and finish, new box asking to rate the helper services.\n\n
+        7-Then All done.
+    </string>
+    <string name="how_to_use_helper">
+        1-Create an Account using your email and then fill your info.\n\n
+        2-Then a new Activity show that represent list of order for user that need help.\n\n
+        3-Select One Order that Suits your experience and location.\n\n
+        4-Then a Dialog Box will shown with two button for completing and other to view user location.\n\n
+        5-after complete the fix click in complete.\n\n
+        6-Then All Done.\n
+    </string>
+
+    <string name="about_app_arabic">
+        تطبيق ساعدني هو عبارة عن تطبيق اندرويد لمساعدة الاشخاص الذين يواجهون
+        مشكلة في سيارتهم بينما هم على الطريق, لذا يقوم المستخدم بطلب المساعدة من المساعدين
+        القريبين لاصلاح سياراتهم
+    </string>
+
+    <string name="how_to_use_helper_arabic">
+        1- اولا قم بانشاء حساب باستخدام ايميلك و قم بعتبئ معلوماتك.
+        \n
+         2- بعدها تظهر شاشة جديدة تعرض بيانات الطلبات في قائمة التي تحتاج مساعدة.
+        \n
+        3- قم باختيار احدى هذه االطلبات التي تناسب مهاراتك و موقعك.
+        \n
+        4- بعدها يتم عرض صندوق يحتوي على اثنين من الازرار واحد لاكتمال العملية و الاخر لعرض موقع المستخدم.
+        \n
+        5- بعد الانتهاء من المساعدة اضغط على زر الانتهاء.
+        \n
+    </string>
+    <string name="how_to_use_user_arabic">
+        1- اولا قم بانشاء حساب باستخدام ايميلك و قم بعتبئ معلوماتك.
+        \n
+        2- بعدها تظهر شاشة تحتوي على خريطة لتحديد مكان المستخدم.
+        \n
+        3- اضغط على زر الموقع و قم بتعبئة المشكلة التي تواجهها.
+        \n
+        4- بعدها قم بتسجيل طلبك, يظهر صندوق لانتظار الرد.
+        \n
+        5- عندما يستجيب المساعد يظهر صندوق جديد يحتوي معلومات المساعد.
+        \n
+        6- عند وصول المستخدم و انتهائه يظهر صندوق جديد لتقييم خدمة المساعد.
+        \n
+    </string>
 </resources>

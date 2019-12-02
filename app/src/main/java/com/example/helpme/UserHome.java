@@ -27,6 +27,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
@@ -40,6 +41,7 @@ import com.example.helpme.model.HelperLocation;
 import com.example.helpme.model.OrderOld;
 import com.example.helpme.model.User;
 import com.example.helpme.model.UserOrder;
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -51,6 +53,12 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.api.net.PlacesClient;
+import com.google.android.libraries.places.widget.Autocomplete;
+import com.google.android.libraries.places.widget.AutocompleteActivity;
+import com.google.android.libraries.places.widget.model.AutocompleteActivityMode;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -59,8 +67,10 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
@@ -73,8 +83,9 @@ public class UserHome extends FragmentActivity implements OnMapReadyCallback {
     private final int DEFAULT_ZOOM = 15;
     private final LatLng mDefaultLocation = new LatLng(31.8569, 35.4865);
     private Helper helper1;
-    public static final int FINE_LOCATION_PERMISSION = 101;
     public static final int CALL_PERMISSION = 100;
+    public static final int FINE_LOCATION_PERMISSION = 101;
+    public static final int AUTOCOMPLETE_REQUEST_CODE=102;
     private TextView helperName,helperExp;
     private RatingBar helperRate;
     private ImageView callBtn;
@@ -95,11 +106,25 @@ public class UserHome extends FragmentActivity implements OnMapReadyCallback {
         ImageView locBtn = findViewById(R.id.getLocBtn);
         userLoc = findViewById(R.id.userLoc);
 
+        String apiKey = getString(R.string.api_key_place);
+        if (!Places.isInitialized()) {
+            Places.initialize(getApplicationContext(), apiKey);
+        }
+
+        PlacesClient placesClient = Places.createClient(this);
+
         final Dialog dialogDesc=new Dialog(UserHome.this);
         dialogDesc.setContentView(R.layout.add_description_dialog);
         dialogDesc.setTitle("Add Problem Description");
         final EditText textDesc=dialogDesc.findViewById(R.id.description);
         Button submitDesc=dialogDesc.findViewById(R.id.doneDescBtn);
+
+        userLoc.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onSearchCalled();
+            }
+        });
 
         submitDesc.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -115,8 +140,10 @@ public class UserHome extends FragmentActivity implements OnMapReadyCallback {
                 if (userLoc.getText().toString().equals("")) {
                     dialogDesc.show();
                 }
-                else
-                    Toast.makeText(getApplicationContext(), userLoc.getText().toString(), Toast.LENGTH_SHORT).show();
+                else{
+                    onSearchCalled();
+                }
+
             }
         });
 
@@ -162,6 +189,22 @@ public class UserHome extends FragmentActivity implements OnMapReadyCallback {
                         Toast.makeText(getApplicationContext(), "Order Layout", Toast.LENGTH_SHORT).show();
                         Intent intentOrder = new Intent(getBaseContext(), OldOrder.class);
                         startActivity(intentOrder);
+                        break;
+
+                    case R.id.feedbackUser:
+                        Toast.makeText(getApplicationContext(),"Feedback Activity",Toast.LENGTH_SHORT).show();
+                        Intent intentFeedBack=new Intent(UserHome.this,FeedBackActivity.class);
+                        intentFeedBack.putExtra("type","user");
+                        intentFeedBack.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        startActivity(intentFeedBack);
+                        break;
+
+                    case R.id.aboutUser:
+                        Toast.makeText(getApplicationContext(),"About Activity",Toast.LENGTH_SHORT).show();
+                        Intent intentAbout=new Intent(UserHome.this,AboutActivity.class);
+                        intentAbout.putExtra("type","user");
+                        intentAbout.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        startActivity(intentAbout);
                         break;
 
                     case R.id.logout_user:
@@ -272,6 +315,43 @@ public class UserHome extends FragmentActivity implements OnMapReadyCallback {
                     Toast.makeText(getApplicationContext(), "Successful Call permission", Toast.LENGTH_SHORT).show();
                 } else
                     Toast.makeText(getApplicationContext(), "Sorry you will not call without permission", Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+
+    public void onSearchCalled() {
+        // Set the fields to specify which types of place data to return.
+        List<Place.Field> fields = Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS, Place.Field.LAT_LNG);
+        // Start the autocomplete intent.
+        Intent intent = new Autocomplete.IntentBuilder(
+                AutocompleteActivityMode.FULLSCREEN, fields).setCountry("JO")
+                .build(this);
+        startActivityForResult(intent, AUTOCOMPLETE_REQUEST_CODE);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == AUTOCOMPLETE_REQUEST_CODE) {
+            if (resultCode == RESULT_OK) {
+                assert data != null;
+                Place place = Autocomplete.getPlaceFromIntent(data);
+                Log.i("UserHomeX", "Place: " + place.getName() + ", " + place.getId() + ", " + place.getAddress());
+                Toast.makeText(UserHome.this, "ID: " + place.getId() + "address:" + place.getAddress() + "Name:" + place.getName() + " latlong: " + place.getLatLng(), Toast.LENGTH_LONG).show();
+                String address = place.getAddress();
+                assert address != null;
+                Log.i("addressX",address);
+                // do query with address
+
+            } else if (resultCode == AutocompleteActivity.RESULT_ERROR) {
+                // TODO: Handle the error.
+                assert data != null;
+                Status status = Autocomplete.getStatusFromIntent(data);
+                Toast.makeText(UserHome.this, "Error: " + status.getStatusMessage(), Toast.LENGTH_LONG).show();
+                assert status.getStatusMessage() != null;
+                Log.i("UserHomeX", status.getStatusMessage());
+            } else if (resultCode == RESULT_CANCELED) {
+                Toast.makeText(getApplicationContext(),"Canceled",Toast.LENGTH_SHORT).show();
             }
         }
     }

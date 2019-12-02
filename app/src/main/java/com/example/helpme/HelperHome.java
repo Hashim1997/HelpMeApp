@@ -104,15 +104,31 @@ public class HelperHome extends AppCompatActivity {
                         startActivity(intent);
                         break;
 
-                        case R.id.logout:
-                            Toast.makeText(getApplicationContext(),"Login Out",Toast.LENGTH_SHORT).show();
-                            editor.clear();
-                            editor.apply();
-                            Intent intent1=new Intent(HelperHome.this,AccountChooseActivity.class);
-                            startActivity(intent1);
-                            stopService(new Intent(getApplicationContext(),LocationService.class));
-                            HelperHome.this.finish();
-                            break;
+                    case R.id.feedbackHelper:
+                        Toast.makeText(getApplicationContext(),"FeedBack Activity",Toast.LENGTH_SHORT).show();
+                        Intent intentFeed=new Intent(HelperHome.this,FeedBackActivity.class);
+                        intentFeed.putExtra("type","helper");
+                        intentFeed.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        startActivity(intentFeed);
+                        break;
+
+                    case R.id.aboutHelper:
+                        Toast.makeText(getApplicationContext(),"About Activity",Toast.LENGTH_SHORT).show();
+                        Intent intentAbout=new Intent(HelperHome.this,AboutActivity.class);
+                        intentAbout.putExtra("type","helper");
+                        intentAbout.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        startActivity(intentAbout);
+                        break;
+
+                    case R.id.logout:
+                        Toast.makeText(getApplicationContext(),"Login Out",Toast.LENGTH_SHORT).show();
+                        editor.clear();
+                        editor.apply();
+                        Intent intent1=new Intent(HelperHome.this,AccountChooseActivity.class);
+                        startActivity(intent1);
+                        stopService(new Intent(getApplicationContext(),LocationService.class));
+                        HelperHome.this.finish();
+                        break;
 
                         default:
                             return true;
