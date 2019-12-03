@@ -9,10 +9,11 @@ public class UserOrder {
     private String email;
     private String helperID;
     private String description;
-    private boolean state;
+    private String price;
     private boolean complete;
     private double longitude;
     private double latitude;
+
 
     public String getEmail() {
         return email;
@@ -72,12 +73,7 @@ public class UserOrder {
         this.carColor = carColor;
     }
 
-    public boolean isState() {
-        return state;
-    }
-
     public void setState(boolean state) {
-        this.state = state;
     }
 
     public String getHelperID() {
@@ -102,5 +98,16 @@ public class UserOrder {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getPrice() {
+        return price;
+    }
+
+    public void setPrice(String price) {
+        this.price = price;
+    }
+
+    public void setAccept(String accept) {
     }
 }

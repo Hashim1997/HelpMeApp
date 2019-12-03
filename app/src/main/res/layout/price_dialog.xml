@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:minWidth="270dp"
+    android:background="@color/black">
+
+
+    <TextView
+        android:id="@+id/descriptionProblemPrice"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="14sp"
+        android:padding="3dp"
+        android:textColor="@color/white"
+        android:textAlignment="center"
+        android:text="@string/descProblem"
+        android:fontFamily="@font/bungee_regular"
+        android:layout_marginBottom="20dp"/>
+    <EditText
+        android:id="@+id/priceOrder"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/yellow"
+        android:ems="6"
+        android:layout_marginBottom="20dp"
+        android:hint="@string/price"
+        android:importantForAutofill="no"
+        android:inputType="textEmailAddress"
+        android:padding="5dp"
+        android:textAlignment="center"
+        android:textColor="@color/red"
+        android:textColorHint="@color/red"
+        android:textSize="18sp" />
+
+    <Button
+        android:id="@+id/donePriceBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:layout_marginBottom="20dp"
+        android:fontFamily="@font/bungee_regular"
+        android:text="@string/submit"
+        android:textColor="@color/red"
+        android:textSize="18sp" />
+    <ImageView
+        android:id="@+id/cancelButtonPrice"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:contentDescription="@string/cancel"
+        android:focusable="true"
+        android:src="@mipmap/ic_cancel"/>
+
+
+</LinearLayout>

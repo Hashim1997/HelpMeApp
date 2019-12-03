@@ -7,7 +7,6 @@
     android:background="@color/black">
 
     <TextView
-        android:id="@+id/dialogText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
@@ -21,7 +20,6 @@
         android:textSize="18sp" />
 
     <ImageView
-        android:id="@+id/dialogLocation"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"

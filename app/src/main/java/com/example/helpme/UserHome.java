@@ -83,9 +83,9 @@ public class UserHome extends FragmentActivity implements OnMapReadyCallback {
     private final int DEFAULT_ZOOM = 15;
     private final LatLng mDefaultLocation = new LatLng(31.8569, 35.4865);
     private Helper helper1;
-    public static final int CALL_PERMISSION = 100;
-    public static final int FINE_LOCATION_PERMISSION = 101;
-    public static final int AUTOCOMPLETE_REQUEST_CODE=102;
+    private static final int CALL_PERMISSION = 100;
+    private static final int FINE_LOCATION_PERMISSION = 101;
+    private static final int AUTOCOMPLETE_REQUEST_CODE=102;
     private TextView helperName,helperExp;
     private RatingBar helperRate;
     private ImageView callBtn;
@@ -319,7 +319,7 @@ public class UserHome extends FragmentActivity implements OnMapReadyCallback {
         }
     }
 
-    public void onSearchCalled() {
+    private void onSearchCalled() {
         // Set the fields to specify which types of place data to return.
         List<Place.Field> fields = Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS, Place.Field.LAT_LNG);
         // Start the autocomplete intent.
@@ -415,7 +415,7 @@ public class UserHome extends FragmentActivity implements OnMapReadyCallback {
 
     private void sendOrder(final Double lat, final Double lon, final String dataDesc) {
 
-        SharedPreferences preferences = getSharedPreferences("login", MODE_PRIVATE);
+        final SharedPreferences preferences = getSharedPreferences("login", MODE_PRIVATE);
         String email = preferences.getString("email", "empty");
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -435,6 +435,8 @@ public class UserHome extends FragmentActivity implements OnMapReadyCallback {
                     order.setDescription(dataDesc);
                     order.setState(false);
                     order.setComplete(false);
+                    order.setAccept("0");
+                    order.setPrice("0");
                     order.setHelperID("empty");
                     saveOrder(order);
                 }
@@ -476,23 +478,65 @@ public class UserHome extends FragmentActivity implements OnMapReadyCallback {
 
         final FirebaseDatabase databaseOrder = FirebaseDatabase.getInstance();
         DatabaseReference referenceOrder = databaseOrder.getReference();
-        referenceOrder.child("Orders").child(order.getEmail()).addValueEventListener(new ValueEventListener() {
+        referenceOrder.child("Orders").child(order.getEmail()).child("state").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                UserOrder order1=dataSnapshot.getValue(UserOrder.class);
-                assert order1 != null;
-                if (order1.isState()) {
+                boolean state= (boolean) dataSnapshot.getValue();
+                if (state){
                     dialog.cancel();
-                    viewInfoDialog(order1.getHelperID(), order1.getEmail());
+                    requestOrder(order);
                 }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                Toast.makeText(getApplicationContext(), databaseError.toString(), Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(),databaseError.toString(),Toast.LENGTH_SHORT).show();
                 dialog.cancel();
             }
         });
+    }
+
+    private void requestOrder(final UserOrder order){
+        DatabaseReference referenceOrder=FirebaseDatabase.getInstance().getReference();
+        referenceOrder.child("Orders").child(order.getEmail()).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                UserOrder order1=dataSnapshot.getValue(UserOrder.class);
+                assert order1 != null;
+                approvePrice(order1);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Toast.makeText(getApplicationContext(), databaseError.toString(), Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    private void approvePrice(final UserOrder order3){
+        AlertDialog.Builder builder=new AlertDialog.Builder(UserHome.this);
+        builder.setMessage("The Price is "+order3.getPrice())
+                .setPositiveButton(R.string.approve, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        FirebaseDatabase database=FirebaseDatabase.getInstance();
+                        DatabaseReference reference=database.getReference();
+                        reference.child("Orders").child(order3.getEmail()).child("accept").setValue("1");
+                        viewInfoDialog(order3.getHelperID(), order3.getEmail());
+                    }
+                }).setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                DatabaseReference reference=FirebaseDatabase.getInstance().getReference();
+                reference.child("Orders").child(order3.getEmail()).child("accept").setValue("2");
+                reference.child("Orders").child(order3.getEmail()).child("state").setValue(false);
+                order3.setState(false);
+                order3.setAccept("0");
+                viewWaitDialog(order3);
+            }
+        });
+        builder.create();
+        builder.show();
     }
 
     private void viewInfoDialog(String helper, final String order) {
@@ -512,7 +556,7 @@ public class UserHome extends FragmentActivity implements OnMapReadyCallback {
 
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
         final DatabaseReference reference = database.getReference();
-        reference.child("Helpers").child(helper).addValueEventListener(new ValueEventListener() {
+        reference.child("Helpers").child(helper).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 helper1 = dataSnapshot.getValue(Helper.class);
@@ -542,7 +586,7 @@ public class UserHome extends FragmentActivity implements OnMapReadyCallback {
                 UserOrder order2=dataSnapshot.getValue(UserOrder.class);
                 if (order2 != null && order2.isComplete()) {
                     if (counter<=0)
-                    viewFeedOrder(helper1);
+                    viewFeedOrder(order2.getHelperID());
                     counter++;
                     dialog1.cancel();
                 }
@@ -556,7 +600,8 @@ public class UserHome extends FragmentActivity implements OnMapReadyCallback {
         });
     }
 
-    private void viewFeedOrder(Helper helper2) {
+    private void viewFeedOrder( String helper) {
+
         final Dialog dialogFinish=new Dialog(UserHome.this);
         dialogFinish.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialogFinish.setContentView(R.layout.finish_dialog);
@@ -566,20 +611,35 @@ public class UserHome extends FragmentActivity implements OnMapReadyCallback {
         final TextView helperName=dialogFinish.findViewById(R.id.helperFinish);
         final TextView helperEx=dialogFinish.findViewById(R.id.helperExpFinish);
         helperRateOrder=dialogFinish.findViewById(R.id.helperRateFinish);
-        Button doneBtn=dialogFinish.findViewById(R.id.doneBtn);
+        final Button doneBtn=dialogFinish.findViewById(R.id.doneBtn);
 
-        helperName.setText(helper2.getFullName());
-        helperEx.setText(helper2.getTypeOfExperience());
-        doneBtn.setOnClickListener(new View.OnClickListener() {
+        final FirebaseDatabase database = FirebaseDatabase.getInstance();
+        final DatabaseReference reference = database.getReference();
+        reference.child("Helpers").child(helper).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onClick(View v) {
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                helper1 = dataSnapshot.getValue(Helper.class);
+                if (helper1 != null) {
+                    helperName.setText(helper1.getFullName());
+                    helperEx.setText(helper1.getTypeOfExperience());
+                    doneBtn.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
 
-                name=helperName.getText().toString().trim();
-                experience=helperEx.getText().toString().trim();
-                rateHelper=helperRateOrder.getRating();
-                sendFeedBack(name, experience, rateHelper);
-                dialogFinish.dismiss();
+                            name=helperName.getText().toString().trim();
+                            experience=helperEx.getText().toString().trim();
+                            rateHelper=helperRateOrder.getRating();
+                            sendFeedBack(name, experience, rateHelper);
+                            dialogFinish.dismiss();
 
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Toast.makeText(getApplicationContext(), databaseError.toString(), Toast.LENGTH_LONG).show();
             }
         });
 

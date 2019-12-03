@@ -24,7 +24,7 @@ import java.util.Objects;
 
 public class FeedBackActivity extends AppCompatActivity {
 
-    protected String feedBackText;
+    private String feedBackText;
     private String userID;
     private ProgressBar progressFeed;
     private  Button submitFeed;

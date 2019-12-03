@@ -50,7 +50,7 @@ public class HelperHome extends AppCompatActivity {
     private DrawerLayout drawerLayout;
     private static final int REQUEST_CODE=101;
     private String email;
-    public static final int FINE_LOCATION_PERMISSION = 101;
+    private static final int FINE_LOCATION_PERMISSION = 101;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

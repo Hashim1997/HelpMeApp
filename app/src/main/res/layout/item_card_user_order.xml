@@ -37,7 +37,8 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginTop="15dp"
-                android:numStars="4"
+                android:numStars="5"
+                android:isIndicator="false"
                 android:progressTint="@color/yellow"
                 android:rating="4" />
         </LinearLayout>

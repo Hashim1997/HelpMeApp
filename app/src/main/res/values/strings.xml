@@ -10,6 +10,8 @@
     <string name="call">CALL HELPER</string>
     <string name="quote">YOUR CAR IN RIGHT HAND</string>
     <string name="submit">SUBMIT</string>
+    <string name="price">PRICE</string>
+    <string name="descProblem">The problem is the tire is destroyed</string>
     <string name="api_key_place">AIzaSyBnMC4TLIgor487XbJ8LhUGIx6CkZnosHE</string>
     <string name="back">BACK BUTTON</string>
     <string name="choose">CHOOSE YOUR ACCOUNT</string>
