@@ -1,5 +1,12 @@
 package com.example.helpme.model;
 
+/*
+user order class to create order object that send it to firebase database and shown in helper home list consist of
+Full name, location, car type, car color, email, helper id (helper email), description, price, state (if helper come), accept (price approve),
+complete (if served), longitude and latitude for user location
+with setter and getter
+ */
+
 public class UserOrder {
 
     private String fullName;
@@ -10,10 +17,21 @@ public class UserOrder {
     private String helperID;
     private String description;
     private String price;
+    private boolean state;
+    private String accept;
     private boolean complete;
     private double longitude;
     private double latitude;
 
+    public UserOrder() {}
+
+    public String getAccept() {
+        return accept;
+    }
+
+    public void setAccept(String accept) {
+        this.accept = accept;
+    }
 
     public String getEmail() {
         return email;
@@ -22,8 +40,6 @@ public class UserOrder {
     public void setEmail(String email) {
         this.email = email;
     }
-
-    public UserOrder() {}
 
     public double getLongitude() {
         return longitude;
@@ -73,9 +89,6 @@ public class UserOrder {
         this.carColor = carColor;
     }
 
-    public void setState(boolean state) {
-    }
-
     public String getHelperID() {
         return helperID;
     }
@@ -108,6 +121,13 @@ public class UserOrder {
         this.price = price;
     }
 
-    public void setAccept(String accept) {
+
+
+    public boolean isState() {
+        return state;
+    }
+
+    public void setState(boolean state) {
+        this.state = state;
     }
 }

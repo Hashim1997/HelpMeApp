@@ -1,5 +1,11 @@
 package com.example.helpme.model;
 
+/*
+User class to create user object that deal with firebase database consist of
+Full name, password, email, phone number, car type, car model and car color
+with setter and getter
+ */
+
 public class User {
     private String fullName;
     private String password;

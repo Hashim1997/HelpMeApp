@@ -43,7 +43,6 @@
         android:layout_gravity="center"
         android:numStars="5"
         android:background="@color/white"
-        android:clickable="false"
         android:layout_marginBottom="15dp"
         android:progressTint="@color/yellow"
         android:rating="1" />

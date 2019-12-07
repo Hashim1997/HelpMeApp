@@ -43,8 +43,10 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.List;
 
+//an activity class for helper
 public class HelperHome extends AppCompatActivity {
 
+    //define object and variable
     private RecyclerView helpOrderRecycler;
     private final List<UserOrder> orderList=new ArrayList<>();
     private DrawerLayout drawerLayout;
@@ -58,6 +60,7 @@ public class HelperHome extends AppCompatActivity {
         setContentView(R.layout.activity_helper_home);
 
 
+        //setup the drawer layout
         helpOrderRecycler=findViewById(R.id.orderList);
         ImageView drawerImage = findViewById(R.id.drawerSwitch);
         drawerLayout=findViewById(R.id.home_Screen);
@@ -65,17 +68,21 @@ public class HelperHome extends AppCompatActivity {
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
 
+        //request location permission
         requestLocationPermission();
 
+        //get email from offline storage
         SharedPreferences sharedPreferences=getSharedPreferences("login",MODE_PRIVATE);
         final SharedPreferences.Editor editor=sharedPreferences.edit();
 
+        //drawer button to pull drawer
         drawerImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 drawerLayout.openDrawer(GravityCompat.START);
             }
         });
+
 
         NavigationView viewNav=findViewById(R.id.navView);
         viewNav.setItemIconTintList(null);
@@ -86,6 +93,7 @@ public class HelperHome extends AppCompatActivity {
 
         LinearLayout layout=headerView.findViewById(R.id.linearHeader);
 
+        //drawer header click to hide drawer
         layout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -93,17 +101,20 @@ public class HelperHome extends AppCompatActivity {
             }
         });
 
+        //menu items select options drawer
         viewNav.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
                 int id=menuItem.getItemId();
 
                 switch (id){
+                    //open profile
                     case R.id.profile_layout:
                         Intent intent=new Intent(HelperHome.this,Profile.class);
                         startActivity(intent);
                         break;
 
+                        //open feedback
                     case R.id.feedbackHelper:
                         Toast.makeText(getApplicationContext(),"FeedBack Activity",Toast.LENGTH_SHORT).show();
                         Intent intentFeed=new Intent(HelperHome.this,FeedBackActivity.class);
@@ -112,6 +123,7 @@ public class HelperHome extends AppCompatActivity {
                         startActivity(intentFeed);
                         break;
 
+                        //open about
                     case R.id.aboutHelper:
                         Toast.makeText(getApplicationContext(),"About Activity",Toast.LENGTH_SHORT).show();
                         Intent intentAbout=new Intent(HelperHome.this,AboutActivity.class);
@@ -120,6 +132,7 @@ public class HelperHome extends AppCompatActivity {
                         startActivity(intentAbout);
                         break;
 
+                        //logout
                     case R.id.logout:
                         Toast.makeText(getApplicationContext(),"Login Out",Toast.LENGTH_SHORT).show();
                         editor.clear();
@@ -142,6 +155,7 @@ public class HelperHome extends AppCompatActivity {
         email=preferences.getString("email","empty");
 
 
+        //fetch order list from firebase and must not be complete
         FirebaseDatabase databaseOrder = FirebaseDatabase.getInstance();
         DatabaseReference referenceOrder = databaseOrder.getReference();
         referenceOrder.child("Orders").addValueEventListener(new ValueEventListener() {
@@ -165,6 +179,7 @@ public class HelperHome extends AppCompatActivity {
 
     private void requestLocationPermission() {
 
+        //location id key and location service
         int locationFinePermission = ContextCompat.checkSelfPermission(HelperHome.this, Manifest.permission.ACCESS_FINE_LOCATION);
         LocationManager lm = (LocationManager) getSystemService(Context. LOCATION_SERVICE ) ;
 
@@ -175,15 +190,18 @@ public class HelperHome extends AppCompatActivity {
         gps_enabled = lm.isProviderEnabled(LocationManager. GPS_PROVIDER ) ;
         network_enabled = lm.isProviderEnabled(LocationManager. NETWORK_PROVIDER ) ;
 
+        //service intent to operate it
         Intent intentService=new Intent(getApplicationContext(),LocationService.class);
+        //if the android system higher tha 6 call runtime permission
         if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.M){
             if (locationFinePermission != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(HelperHome.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, FINE_LOCATION_PERMISSION);
             }
             else{
+                //check if location is on
                 if (!gps_enabled && !network_enabled){
                     openLocationSetting();
-                }
+                }//run background service
                 else
                     startService(intentService);
             }
@@ -197,6 +215,7 @@ public class HelperHome extends AppCompatActivity {
         }
     }
 
+    // dialog to ask for open location setting
     private void openLocationSetting(){
         AlertDialog.Builder builder = new AlertDialog.Builder(HelperHome.this);
         builder.setTitle("Need Permissions");
@@ -218,12 +237,14 @@ public class HelperHome extends AppCompatActivity {
 
     }
 
+    // method to open location setting intent
     private void openSettings(){
         Intent intent=new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
         startActivity(intent);
         startService(new Intent(getApplicationContext(),LocationService.class));
     }
 
+    //override method after calling runtime permission to check request key
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == REQUEST_CODE) {
@@ -233,12 +254,14 @@ public class HelperHome extends AppCompatActivity {
         }
     }
 
+    //method to create recycler view list and pass argument to it's class
     private void setupRecycler(Context context, List<UserOrder> orders, Location location){
         OrderAdapter adapter=new OrderAdapter(context,orders,location,HelperHome.this);
         helpOrderRecycler.setAdapter(adapter);
         helpOrderRecycler.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
     }
 
+    //retrieve helper data included live location update from firebase
     private void retrieveHelperData(String email, final List<UserOrder> orders){
         FirebaseDatabase database=FirebaseDatabase.getInstance();
         DatabaseReference reference=database.getReference();

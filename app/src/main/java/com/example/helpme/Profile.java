@@ -25,8 +25,10 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
+//an activity to edit user or helper profile data
 public class Profile extends AppCompatActivity {
 
+    //define view and variable
     private EditText fullName,emailX,passWord,carTypeOfExperience,carColorExpLevel,carModelOrLocation,phoneNumber;
     private String fullNameText,emailText,passWordText,carTypeOfExperienceText,carColorExpLevelText,carModelOrLocationText,phoneNumberText,savedType;
     private SharedPreferences profilePref;
@@ -38,6 +40,7 @@ public class Profile extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
 
+        //bind view to id
         editProfileBtn=findViewById(R.id.editProfileBtn);
         fullName=findViewById(R.id.FullNameProfile);
         emailX=findViewById(R.id.profileEmail);
@@ -49,12 +52,14 @@ public class Profile extends AppCompatActivity {
         progressProfile=findViewById(R.id.progressProfile);
 
 
+        //retrieve email and password
         profilePref=getSharedPreferences("login",MODE_PRIVATE);
         String savedEmail=profilePref.getString("email","empty");
         String savedPassword=profilePref.getString("password","empty");
         savedType=profilePref.getString("type","empty");
 
         Toast.makeText(getApplicationContext(),savedEmail+" "+savedPassword+" "+savedType,Toast.LENGTH_LONG).show();
+        //if user retrieve ir else retrieve helper data
         if (savedType.equals("Users")){
             retrieveUserInfo(savedEmail,savedPassword);
         }
@@ -62,9 +67,11 @@ public class Profile extends AppCompatActivity {
             retrieveHelperInfo(savedEmail,savedPassword);
         }
 
+        //in button edit change user or helper data
         editProfileBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //if button edit make all text clickable
                 if (editProfileBtn.getText().equals("EDIT")){
                     editProfileBtn.setText("SAVE");
                     fullName.setEnabled(true);
@@ -74,6 +81,7 @@ public class Profile extends AppCompatActivity {
                     carTypeOfExperience.setEnabled(true);
                     phoneNumber.setEnabled(true);
                 }
+                //if save and validate save all info to firebase
                 else if (editProfileBtn.getText().equals("SAVE")){
                     progressProfile.setVisibility(View.VISIBLE);
                     editProfileBtn.setVisibility(View.GONE);
@@ -101,6 +109,7 @@ public class Profile extends AppCompatActivity {
         });
     }
 
+    //method for user database section to retrieve data
     private void retrieveUserInfo(final String email, final String password){
         FirebaseDatabase database=FirebaseDatabase.getInstance();
         DatabaseReference reference=database.getReference();
@@ -132,6 +141,7 @@ public class Profile extends AppCompatActivity {
         });
     }
 
+    //validate user input else show error
     private boolean validation(){
         boolean state=true;
         boolean passWordState=isValidPassWord(passWordText);
@@ -140,6 +150,7 @@ public class Profile extends AppCompatActivity {
             fullName.setError("Please input name");
             state=false;
         }
+        //if password not empty and consist of symbol capital and small letter and number and 8 digits
         if (passWordText.isEmpty() || !passWordState){
             passWord.setError("Please input correct password");
             Toast.makeText(getApplicationContext(),"Password must contain letter and character & at least 8 digits", Toast.LENGTH_LONG).show();
@@ -164,11 +175,13 @@ public class Profile extends AppCompatActivity {
         return state;
     }
 
+    //if password not empty and consist of symbol capital and small letter and number and 8 digits
     private boolean isValidPassWord(String passwords){
         Pattern PASSWORD_PATTERN= Pattern.compile("^(?=.*[0-9])(?=.*[A-Z])(?=.*[@#%^&+=!*])(?=\\S+$).{8,16}$");
         return PASSWORD_PATTERN.matcher(passwords).matches();
     }
 
+    //retrieve helper data from firebase helper section (document or root)
     private void retrieveHelperInfo(final String email, final String password){
         FirebaseDatabase database=FirebaseDatabase.getInstance();
         DatabaseReference reference=database.getReference();
@@ -200,8 +213,10 @@ public class Profile extends AppCompatActivity {
         });
     }
 
+    //save user new data in place of old data method
     private void editProfileUserData(String fullName, String email, String password, String phoneNumber, String carColor, String carModel, String carType){
 
+        //user object
         final User user=new User();
         user.setFullName(fullName);
         user.setEmail(email);
@@ -211,6 +226,7 @@ public class Profile extends AppCompatActivity {
         user.setCarModel(carModel);
         user.setCarType(carType);
 
+        //edit in offline storage resource by key
         final SharedPreferences.Editor editor=profilePref.edit();
 
         FirebaseDatabase userDatabase=FirebaseDatabase.getInstance();
@@ -232,6 +248,7 @@ public class Profile extends AppCompatActivity {
         });
     }
 
+    //save helper new data in place of old data method
     private void editProfileHelperData(String fullName, String email, String password, String phoneNumber, String experienceLevel, String location, String typeOfExperience){
 
         final Helper helper=new Helper();
@@ -243,7 +260,7 @@ public class Profile extends AppCompatActivity {
         helper.setLocation(location);
         helper.setTypeOfExperience(typeOfExperience);
 
-
+        //edit in offline storage resource
         final SharedPreferences.Editor editor=profilePref.edit();
 
         FirebaseDatabase userDatabase=FirebaseDatabase.getInstance();

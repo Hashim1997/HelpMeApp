@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
 import android.view.Window;
@@ -31,8 +30,10 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
+//an activity for log in for existing account
 public class SignIn extends AppCompatActivity {
 
+    //define object and variable
     private SharedPreferences loginPref;
     private String type,substring,password;
     private Button loginBtn;
@@ -48,6 +49,7 @@ public class SignIn extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_in);
 
+        //bind view to id
         loginEmail=findViewById(R.id.loginEmail);
         loginPassword=findViewById(R.id.loginPassword);
         loginBtn=findViewById(R.id.loginBtn);
@@ -56,6 +58,7 @@ public class SignIn extends AppCompatActivity {
         TextView signUpSwitch = findViewById(R.id.signupSwitch);
         TextView forgetPassword = findViewById(R.id.forgetPassword);
 
+        //call forgetPassWordDialog method
         forgetPassword.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -65,23 +68,26 @@ public class SignIn extends AppCompatActivity {
 
 
 
+        //receive data from previous activity by key
         Bundle bundle=getIntent().getExtras();
         type= Objects.requireNonNull(bundle).getString("type");
 
 
+        //if user it user account else helper account
         assert type != null;
         if (type.equals("user"))
             accountType="Users";
         else
             accountType="Helpers";
 
+        //log in button
         loginBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 password=loginPassword.getText().toString().trim();
                 substring=loginEmail.getText().toString().trim();
 
-
+                //validation for input data
                 if (validation()){
                     progressBar.setVisibility(View.VISIBLE);
                     loginBtn.setVisibility(View.GONE);
@@ -100,6 +106,7 @@ public class SignIn extends AppCompatActivity {
         });
 
 
+        //go to sign up activity
         signUpSwitch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -111,8 +118,9 @@ public class SignIn extends AppCompatActivity {
         });
     }
 
+    //show dialog to change user or helper password
     private void forgetPassWordDialog() {
-        Log.i("TypeX",type);
+
         Dialog dialog=new Dialog(SignIn.this);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setContentView(R.layout.forget_password_dialog);
@@ -153,8 +161,10 @@ public class SignIn extends AppCompatActivity {
         dialog.show();
     }
 
+    //check if user account is already exist before overwrite old password
     private void checkUserAccountExist(final String email, final String password){
 
+        //create database
         FirebaseDatabase database=FirebaseDatabase.getInstance();
         DatabaseReference reference=database.getReference();
         reference.child(accountType).addListenerForSingleValueEvent(new ValueEventListener() {
@@ -174,10 +184,10 @@ public class SignIn extends AppCompatActivity {
         });
     }
 
+    //save reset password
     private void saveResetPassword(String email, String password) {
         FirebaseDatabase database=FirebaseDatabase.getInstance();
         DatabaseReference reference=database.getReference();
-        Log.i("typeX",type);
         reference.child(accountType).child(email).child("password").setValue(password).
                 addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
@@ -194,6 +204,7 @@ public class SignIn extends AppCompatActivity {
         });
     }
 
+    //validate password pattern
     private boolean resetValidation(String email, String password, String re_password){
         boolean state=true;
         boolean emailState= Patterns.EMAIL_ADDRESS.matcher(email).matches();
@@ -207,6 +218,7 @@ public class SignIn extends AppCompatActivity {
         return state;
     }
 
+    //retrieve user account in log in click and open user home
     private void retrieveUserAccount(final String email, final String password){
         FirebaseDatabase database=FirebaseDatabase.getInstance();
         DatabaseReference reference=database.getReference();
@@ -253,6 +265,7 @@ public class SignIn extends AppCompatActivity {
         });
     }
 
+    //retrieve helper account in log in click and open helper home
     private void retrieveHelperAccount(final String email,final String password){
         FirebaseDatabase database=FirebaseDatabase.getInstance();
         DatabaseReference reference=database.getReference();
@@ -299,6 +312,7 @@ public class SignIn extends AppCompatActivity {
         });
     }
 
+    //validate log in input
     private boolean validation(){
         boolean state=true;
 
@@ -316,6 +330,7 @@ public class SignIn extends AppCompatActivity {
         return state;
     }
 
+    //validate reset password
     private boolean isValidPassWord(String passwords){
         Pattern PASSWORD_PATTERN= Pattern.compile("^(?=.*[0-9])(?=.*[A-Z])(?=.*[@#%^&+=!*])(?=\\S+$).{8,16}$");
         return PASSWORD_PATTERN.matcher(passwords).matches();

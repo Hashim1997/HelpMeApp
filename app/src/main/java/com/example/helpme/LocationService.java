@@ -1,6 +1,5 @@
 package com.example.helpme;
 
-
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -24,7 +23,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-
+//background service class to execute code in background
 public class LocationService extends Service {
 
     private static final int CHANNEL_ID=100;
@@ -32,6 +31,7 @@ public class LocationService extends Service {
 
     }
 
+    //to send and receive intent data from other services or activity
     @Override
     public IBinder onBind(Intent intent) {
         // TODO: Return the communication channel to the service.
@@ -45,6 +45,7 @@ public class LocationService extends Service {
         fetchLocation();
     }
 
+    //check if location enabled and show notification
     private void locationEnabled () {
         LocationManager lm = (LocationManager)
                 getSystemService(Context. LOCATION_SERVICE ) ;
@@ -72,11 +73,13 @@ public class LocationService extends Service {
         }
     }
 
+    //when service start
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         return super.onStartCommand(intent, flags, startId);
     }
 
+    //when service destroyed or stopped
     @Override
     public void onDestroy() {
         super.onDestroy();
@@ -86,12 +89,15 @@ public class LocationService extends Service {
     //get user location
     private void fetchLocation() {
 
+        //FusedLocationProviderClient api to get live location from device by google
         FusedLocationProviderClient fusedLocationProviderClient = new FusedLocationProviderClient(getApplicationContext());
         LocationRequest locationRequest = new LocationRequest();
 
+        //service properties
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         locationRequest.setFastestInterval(2000);
         locationRequest.setInterval(4000);
+        //on update listener
         fusedLocationProviderClient.requestLocationUpdates(locationRequest,new LocationCallback(){
             @Override
             public void onLocationResult(LocationResult locationResult) {
@@ -105,7 +111,7 @@ public class LocationService extends Service {
         },getMainLooper());
     }
 
-    //save helper location for user
+    //save helper location for user in firebase real tome database
     private void saveHelperLocation(Double lat, Double lon){
         SharedPreferences preferences=getSharedPreferences("login",MODE_PRIVATE);
         String email=preferences.getString("email","empty");

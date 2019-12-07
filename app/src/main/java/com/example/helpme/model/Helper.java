@@ -1,5 +1,10 @@
 package com.example.helpme.model;
 
+/*
+helper class to create helper object that deal with firebase database consist of
+Full name, password, email, phone number, level of experience, type of experience, live location and rate
+with setter and getter
+ */
 public class Helper {
 
     private String fullName;

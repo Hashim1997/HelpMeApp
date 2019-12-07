@@ -1,5 +1,10 @@
 package com.example.helpme.model;
 
+/*
+helper location class to create location object that deal with live location in background services and sent to firebase consist of
+longitude, latitude and key
+with setter and getter
+ */
 public class HelperLocation {
 
     private Double longitude;

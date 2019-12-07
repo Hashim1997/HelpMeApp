@@ -2,6 +2,7 @@ package com.example.helpme;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.fragment.app.FragmentActivity;
 
@@ -14,8 +15,10 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.Objects;
 
+//an activity to show user location for helper in location button click
 public class UserLocation extends FragmentActivity implements OnMapReadyCallback {
 
+    //latitude and longitude
     private Double lat,lon;
 
     @Override
@@ -24,15 +27,15 @@ public class UserLocation extends FragmentActivity implements OnMapReadyCallback
         setContentView(R.layout.activity_user_location);
         Bundle bundle=getIntent().getExtras();
 
+        //check if data not null
         if (bundle != null) {
             lat = bundle.getDouble("lat");
             lon = bundle.getDouble("lon");
-            Log.i("latitudeX", String.valueOf(lat));
-            Log.i("longitudeX", String.valueOf(lon));
         }
         else{
             Log.i("latitude","it equal null");
             Log.i("longitude","it equal null");
+            Toast.makeText(getApplicationContext(),"Error Occurred",Toast.LENGTH_LONG).show();
         }
 
 
@@ -55,13 +58,13 @@ public class UserLocation extends FragmentActivity implements OnMapReadyCallback
      */
     @Override
     public void onMapReady(GoogleMap googleMap) {
+        //add zoom enabled for helper to zoom user location
         googleMap.getUiSettings().setZoomControlsEnabled(true);
 
         double latitude= lat;
         double longitude=lon;
 
-        // Add a marker in Sydney and move the camera
-        //LatLng sydney = new LatLng(-34, 151);
+        // Add a marker to user coordinate and move the camera
         LatLng userLocation=new LatLng(latitude,longitude);
         googleMap.addMarker(new MarkerOptions().position(userLocation).title("User Marker"));
         googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLocation,15));

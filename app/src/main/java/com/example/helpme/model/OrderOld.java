@@ -1,5 +1,11 @@
 package com.example.helpme.model;
 
+/*
+Old Order class to create order object that save old order in firebase database that completed consist of
+helper name, order rate and helper experience
+with setter and getter
+ */
+
 public class OrderOld {
     private String HelperName;
     private float orderRate;

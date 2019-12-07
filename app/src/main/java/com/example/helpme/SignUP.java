@@ -28,8 +28,10 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
+//an activity to create a new account for user or helper
 public class SignUP extends AppCompatActivity {
 
+    //define objects and string
     private EditText fullName, email, passWord, carType, carColor, carModel, phoneNumber;
     private String fullNameText, emailText, passWordText, carTypeText, carColorText, carModelText, phoneNumberText, type;
     private String levelOfExperienceText, typeOfExperienceText, locationText;
@@ -43,6 +45,7 @@ public class SignUP extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up);
 
+        //bind view to id
         signUp=findViewById(R.id.signUpBtn);
         fullName=findViewById(R.id.FullName);
         email=findViewById(R.id.signUpEmail);
@@ -53,10 +56,12 @@ public class SignUP extends AppCompatActivity {
         phoneNumber=findViewById(R.id.phoneNumber);
         progressBar=findViewById(R.id.progressBarSignUP);
 
+        //retrieve data from previous intent
         Bundle bundle=getIntent().getExtras();
         type= Objects.requireNonNull(bundle).getString("type");
 
 
+        //if helper change edit text hint to
         assert type != null;
         if (type.equals("helper")){
 
@@ -66,6 +71,7 @@ public class SignUP extends AppCompatActivity {
         }
 
 
+        //in sign up click check if user fill in specific variable else to helper variable
         signUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -133,6 +139,7 @@ public class SignUP extends AppCompatActivity {
 
 
 
+    //validate user input
     private boolean userValidation(){
         boolean state=true;
         boolean emailState= Patterns.EMAIL_ADDRESS.matcher(emailText).matches();
@@ -170,6 +177,7 @@ public class SignUP extends AppCompatActivity {
         return state;
     }
 
+    //validate helper input
     private boolean helperValidation(){
 
         boolean state=true;
@@ -208,12 +216,13 @@ public class SignUP extends AppCompatActivity {
         return state;
     }
 
+    //validate password 8 char, cap and small letters, symbols and numbers
     private boolean isValidPassWord(String passwords){
         Pattern PASSWORD_PATTERN= Pattern.compile("^(?=.*[0-9])(?=.*[A-Z])(?=.*[@#%^&+=!*])(?=\\S+$).{8,16}$");
         return PASSWORD_PATTERN.matcher(passwords).matches();
     }
 
-
+    //save user account data to user documents
     private void saveUserData(final User user) {
 
         FirebaseDatabase database=FirebaseDatabase.getInstance();
@@ -251,6 +260,7 @@ public class SignUP extends AppCompatActivity {
         });
     }
 
+    //save helper account data to helper section document
     private void saveHelperData(final Helper helper){
 
         FirebaseDatabase database=FirebaseDatabase.getInstance();
@@ -288,6 +298,7 @@ public class SignUP extends AppCompatActivity {
         });
     }
 
+    //check if user already exist before overwrite data
     private void checkUserAccountExist(final String email,final User user){
 
         FirebaseDatabase database=FirebaseDatabase.getInstance();
@@ -311,6 +322,7 @@ public class SignUP extends AppCompatActivity {
         });
     }
 
+    //check helper is already exist before overwrite data
     private void checkHelperAccountExist(final String email, final Helper helper){
         FirebaseDatabase database=FirebaseDatabase.getInstance();
         DatabaseReference reference=database.getReference();

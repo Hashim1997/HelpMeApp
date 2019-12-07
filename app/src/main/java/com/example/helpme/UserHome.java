@@ -74,8 +74,10 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
+//an activity for user home that show the map
 public class UserHome extends FragmentActivity implements OnMapReadyCallback {
 
+    //define object and variable
     private GoogleMap mMap;
     private DrawerLayout drawerLayout;
     private EditText userLoc;
@@ -106,6 +108,7 @@ public class UserHome extends FragmentActivity implements OnMapReadyCallback {
         ImageView locBtn = findViewById(R.id.getLocBtn);
         userLoc = findViewById(R.id.userLoc);
 
+        //api key for places api from google to autocomplete
         String apiKey = getString(R.string.api_key_place);
         if (!Places.isInitialized()) {
             Places.initialize(getApplicationContext(), apiKey);
@@ -113,6 +116,7 @@ public class UserHome extends FragmentActivity implements OnMapReadyCallback {
 
         PlacesClient placesClient = Places.createClient(this);
 
+        //problem info dialog to fill in
         final Dialog dialogDesc=new Dialog(UserHome.this);
         dialogDesc.setContentView(R.layout.add_description_dialog);
         dialogDesc.setTitle("Add Problem Description");
@@ -126,6 +130,7 @@ public class UserHome extends FragmentActivity implements OnMapReadyCallback {
             }
         });
 
+        //save desc
         submitDesc.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -134,6 +139,7 @@ public class UserHome extends FragmentActivity implements OnMapReadyCallback {
                 dialogDesc.dismiss();
             }
         });
+        //view desc dialog
         locBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -148,6 +154,7 @@ public class UserHome extends FragmentActivity implements OnMapReadyCallback {
         });
 
 
+        //setup drawer layout component
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.open, R.string.close);
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
@@ -172,25 +179,30 @@ public class UserHome extends FragmentActivity implements OnMapReadyCallback {
             }
         });
 
+        //edit in offline storage
         SharedPreferences sharedPreferences = getSharedPreferences("login", MODE_PRIVATE);
         final SharedPreferences.Editor editor = sharedPreferences.edit();
 
+        //drawer menu selected listener
         viewNav.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
                 int id = menuItem.getItemId();
                 switch (id) {
+                    //open profile
                     case R.id.profile_user:
                         Intent intentProfile = new Intent(UserHome.this, Profile.class);
                         startActivity(intentProfile);
                         break;
 
+                        //open old order
                     case R.id.order_layout:
                         Toast.makeText(getApplicationContext(), "Order Layout", Toast.LENGTH_SHORT).show();
                         Intent intentOrder = new Intent(getBaseContext(), OldOrder.class);
                         startActivity(intentOrder);
                         break;
 
+                        //open feedback
                     case R.id.feedbackUser:
                         Toast.makeText(getApplicationContext(),"Feedback Activity",Toast.LENGTH_SHORT).show();
                         Intent intentFeedBack=new Intent(UserHome.this,FeedBackActivity.class);
@@ -199,6 +211,7 @@ public class UserHome extends FragmentActivity implements OnMapReadyCallback {
                         startActivity(intentFeedBack);
                         break;
 
+                        //open about
                     case R.id.aboutUser:
                         Toast.makeText(getApplicationContext(),"About Activity",Toast.LENGTH_SHORT).show();
                         Intent intentAbout=new Intent(UserHome.this,AboutActivity.class);
@@ -207,6 +220,7 @@ public class UserHome extends FragmentActivity implements OnMapReadyCallback {
                         startActivity(intentAbout);
                         break;
 
+                        //logout
                     case R.id.logout_user:
                         Toast.makeText(getApplicationContext(), "Login Out", Toast.LENGTH_SHORT).show();
                         editor.clear();
@@ -223,9 +237,11 @@ public class UserHome extends FragmentActivity implements OnMapReadyCallback {
             }
         });
 
+        //add map fragment and it's id
+        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+        //location request key
         int locationFinePermission = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
         LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
@@ -237,6 +253,7 @@ public class UserHome extends FragmentActivity implements OnMapReadyCallback {
         network_enabled = lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
 
 
+        //check android version if higher than 6 call runtime permission
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (locationFinePermission != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(UserHome.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, FINE_LOCATION_PERMISSION);
@@ -247,7 +264,7 @@ public class UserHome extends FragmentActivity implements OnMapReadyCallback {
                 openSettings();
             }
         } else {
-
+            //get map ready
             assert mapFragment != null;
             mapFragment.getMapAsync(this);
 
@@ -272,7 +289,7 @@ public class UserHome extends FragmentActivity implements OnMapReadyCallback {
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         mMap.setMyLocationEnabled(true);
-
+        //retrieve all helper active location and display marker
         FirebaseDatabase databaseHelperLoc = FirebaseDatabase.getInstance();
         DatabaseReference referenceHelperLoc = databaseHelperLoc.getReference();
         referenceHelperLoc.child("ActiveLocation").addValueEventListener(new ValueEventListener() {
@@ -295,10 +312,12 @@ public class UserHome extends FragmentActivity implements OnMapReadyCallback {
         });
     }
 
+    //override method after calling runtime permission to check request key
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         switch (requestCode) {
 
+            //location permission
             case FINE_LOCATION_PERMISSION: {
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     Toast.makeText(getApplicationContext(), "Successful Location permission", Toast.LENGTH_SHORT).show();
@@ -310,6 +329,7 @@ public class UserHome extends FragmentActivity implements OnMapReadyCallback {
                 return;
             }
 
+            //call permission
             case CALL_PERMISSION: {
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     Toast.makeText(getApplicationContext(), "Successful Call permission", Toast.LENGTH_SHORT).show();
@@ -319,6 +339,7 @@ public class UserHome extends FragmentActivity implements OnMapReadyCallback {
         }
     }
 
+    //places api intent creation and start
     private void onSearchCalled() {
         // Set the fields to specify which types of place data to return.
         List<Place.Field> fields = Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS, Place.Field.LAT_LNG);
@@ -329,6 +350,7 @@ public class UserHome extends FragmentActivity implements OnMapReadyCallback {
         startActivityForResult(intent, AUTOCOMPLETE_REQUEST_CODE);
     }
 
+    //activity result called after finish places api intent result
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -356,6 +378,7 @@ public class UserHome extends FragmentActivity implements OnMapReadyCallback {
         }
     }
 
+    //dialog ask to open location setting
     private void openLocationSetting() {
         AlertDialog.Builder builder = new AlertDialog.Builder(UserHome.this);
         builder.setTitle("Need Permissions");
@@ -377,11 +400,13 @@ public class UserHome extends FragmentActivity implements OnMapReadyCallback {
 
     }
 
+    //open location setting by intent
     private void openSettings() {
         Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
         startActivity(intent);
     }
 
+    //get device location by FusedLocationProviderClient api
     private void getDeviceLocation(final String desc) {
 
         FusedLocationProviderClient mFusedLocationProviderClient = new FusedLocationProviderClient(this);
@@ -397,6 +422,7 @@ public class UserHome extends FragmentActivity implements OnMapReadyCallback {
                         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
                                 new LatLng(mLastKnownLocation.getLatitude(),
                                         mLastKnownLocation.getLongitude()), DEFAULT_ZOOM));
+                        //send order location
                         sendOrder(mLastKnownLocation.getLatitude(), mLastKnownLocation.getLongitude(), desc);
                     } else {
                         Log.d("State", "Current location is null. Using defaults.");
@@ -415,9 +441,11 @@ public class UserHome extends FragmentActivity implements OnMapReadyCallback {
 
     private void sendOrder(final Double lat, final Double lon, final String dataDesc) {
 
+        //read email data from offline storage
         final SharedPreferences preferences = getSharedPreferences("login", MODE_PRIVATE);
         String email = preferences.getString("email", "empty");
 
+        //save order info inside object
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference reference = database.getReference("Users");
         reference.child(email).addValueEventListener(new ValueEventListener() {
@@ -450,6 +478,7 @@ public class UserHome extends FragmentActivity implements OnMapReadyCallback {
         });
     }
 
+    //save order object in firebase order section
     private void saveOrder(final UserOrder order1) {
         FirebaseDatabase orderDataBase = FirebaseDatabase.getInstance();
         DatabaseReference orderReference = orderDataBase.getReference("Orders");
@@ -468,6 +497,7 @@ public class UserHome extends FragmentActivity implements OnMapReadyCallback {
         });
     }
 
+    //a wait dialog wait response from helper check state boolean
     private void viewWaitDialog(final UserOrder order) {
         final Dialog dialog = new Dialog(UserHome.this);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -496,6 +526,7 @@ public class UserHome extends FragmentActivity implements OnMapReadyCallback {
         });
     }
 
+    //retrieve all order detail and send to approve price
     private void requestOrder(final UserOrder order){
         DatabaseReference referenceOrder=FirebaseDatabase.getInstance().getReference();
         referenceOrder.child("Orders").child(order.getEmail()).addListenerForSingleValueEvent(new ValueEventListener() {
@@ -513,6 +544,7 @@ public class UserHome extends FragmentActivity implements OnMapReadyCallback {
         });
     }
 
+    //a dialog to ask user to approve or reject price
     private void approvePrice(final UserOrder order3){
         AlertDialog.Builder builder=new AlertDialog.Builder(UserHome.this);
         builder.setMessage("The Price is "+order3.getPrice())
@@ -539,6 +571,7 @@ public class UserHome extends FragmentActivity implements OnMapReadyCallback {
         builder.show();
     }
 
+    //after approve show all helper info inside dialog
     private void viewInfoDialog(String helper, final String order) {
 
         final Dialog dialog1 = new Dialog(UserHome.this);
@@ -600,6 +633,7 @@ public class UserHome extends FragmentActivity implements OnMapReadyCallback {
         });
     }
 
+    // a dialog ask user to rate his experience and helper
     private void viewFeedOrder( String helper) {
 
         final Dialog dialogFinish=new Dialog(UserHome.this);
@@ -646,6 +680,7 @@ public class UserHome extends FragmentActivity implements OnMapReadyCallback {
         dialogFinish.show();
     }
 
+    //save feed back inside old order section can be accessible by old order activity in user account
     private void sendFeedBack(String nameHelper, String exHelper, float rateHelper) {
 
         String format="dd-MM-yyyy";
@@ -677,6 +712,7 @@ public class UserHome extends FragmentActivity implements OnMapReadyCallback {
 
     }
 
+    //create an intent to make a call with helper number
     private void makeACall(String phone) {
         Intent intentCall = new Intent(Intent.ACTION_CALL);
         intentCall.setData(Uri.parse("tel:" + phone));

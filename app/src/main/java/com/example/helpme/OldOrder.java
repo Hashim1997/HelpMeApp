@@ -22,10 +22,12 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.List;
 
+//activity class to show completed order in user history
 public class OldOrder extends AppCompatActivity {
 
     private RecyclerView oldRecycler;
     private final List<OrderOld> oldList=new ArrayList<>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,10 +43,12 @@ public class OldOrder extends AppCompatActivity {
             }
         });
 
+        //offline storage
         SharedPreferences preferences = getSharedPreferences("login", MODE_PRIVATE);
         String email = preferences.getString("email", "empty");
 
 
+        //retrieve old order data from firebase
         FirebaseDatabase databaseOld=FirebaseDatabase.getInstance();
         DatabaseReference referenceOld=databaseOld.getReference();
         referenceOld.child("OldOrder").child(email).addValueEventListener(new ValueEventListener() {
@@ -63,6 +67,7 @@ public class OldOrder extends AppCompatActivity {
         });
     }
 
+    //setup recycler view argument
     private void setupRecycler(List<OrderOld> list){
         OrderOldAdapter adapter=new OrderOldAdapter(list);
         oldRecycler.setAdapter(adapter);
