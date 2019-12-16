@@ -31,6 +31,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
@@ -51,6 +52,7 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.ViewHolderOr
     private final Context mContext;
     private final List<UserOrder> userOrderList;
     private final Location location;
+    private static boolean dialogShowOnce=false;
 
     //constructor for class
     public OrderAdapter(Context context, List<UserOrder> userOrderList, Location location, Context mContext) {
@@ -128,6 +130,7 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.ViewHolderOr
         dialogPrice.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialogPrice.setContentView(R.layout.price_dialog);
 
+        if (!dialogPrice.isShowing())
         dialogPrice.show();
 
         //find view by id for dialog layout
@@ -152,11 +155,17 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.ViewHolderOr
                 String price=priceEdit.getText().toString().trim();
                 if (!price.isEmpty()){
                     order.setPrice(price);
+                    //retrieve an email from offline storage by key
+                    SharedPreferences preferences=context.getSharedPreferences("login",MODE_PRIVATE);
+                    final String email=preferences.getString("email","empty");
                     //initial firebase instance with specific root and save price and set state to reserve the oder
                     FirebaseDatabase database=FirebaseDatabase.getInstance();
                     DatabaseReference reference=database.getReference();
-                    reference.child("Orders").child(order.getEmail()).child("price").setValue(price);
-                    reference.child("Orders").child(order.getEmail()).child("state").setValue(true);
+                    HashMap<String,Object> updateData=new HashMap<>();
+                    updateData.put("price",price);
+                    updateData.put("state",true);
+                    updateData.put("helperID",email);
+                    reference.child("Orders").child(order.getEmail()).updateChildren(updateData);
                     viewWaitDialog(order,pos);
                     dialogPrice.dismiss();
                 }
@@ -174,6 +183,7 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.ViewHolderOr
         dialog.setContentView(R.layout.wait_dialog);
         dialog.setCanceledOnTouchOutside(false);
         dialog.setCancelable(false);
+        if (!dialog.isShowing())
         dialog.show();
 
         //create listener for data change in firebase if the user accept new value added 1 refuse=2
@@ -182,14 +192,16 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.ViewHolderOr
         referenceOrder.child("Orders").child(order.getEmail()).child("accept").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                String accept= Objects.requireNonNull(dataSnapshot.getValue()).toString();
-                if (accept.equals("1")) {
-                    viewDialog(order,p);
-                    dialog.cancel();
-                }
-                else if (accept.equals("2")){
-                    Toast.makeText(mContext,"Price Refuse",Toast.LENGTH_SHORT).show();
-                    dialog.cancel();
+                if (dataSnapshot.exists()){
+                    String accept= Objects.requireNonNull(dataSnapshot.getValue()).toString();
+                    if (accept.equals("1")) {
+                        viewDialog(order,p);
+                        dialog.dismiss();
+                    }
+                    else if (accept.equals("2")){
+                        Toast.makeText(mContext,"Price Refuse",Toast.LENGTH_SHORT).show();
+                        dialog.dismiss();
+                    }
                 }
             }
 
@@ -267,12 +279,16 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.ViewHolderOr
                         Toast.makeText(context,e.toString(),Toast.LENGTH_LONG).show();
                     }
                 });
+                dialogShowOnce=false;
                 //remove item by position
                 removeItem(pos);
                 dialog.cancel();
             }
         });
-        dialog.show();
+        if (!dialog.isShowing() && !dialogShowOnce){
+            dialog.show();
+            dialogShowOnce=true;
+        }
     }
 
     // method to remove specific item by position

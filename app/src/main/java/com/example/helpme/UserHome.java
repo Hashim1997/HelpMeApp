@@ -70,6 +70,7 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
@@ -97,6 +98,7 @@ public class UserHome extends FragmentActivity implements OnMapReadyCallback {
     private int counter=0;
     private String dataDesc;
     private LatLng latLng;
+    private boolean dialogShowOnce=false;
     private SupportMapFragment mapFragment;
 
     @Override
@@ -504,6 +506,7 @@ public class UserHome extends FragmentActivity implements OnMapReadyCallback {
         dialog.setContentView(R.layout.wait_dialog);
         dialog.setCanceledOnTouchOutside(false);
         dialog.setCancelable(false);
+        if (!dialog.isShowing())
         dialog.show();
 
         final FirebaseDatabase databaseOrder = FirebaseDatabase.getInstance();
@@ -511,10 +514,12 @@ public class UserHome extends FragmentActivity implements OnMapReadyCallback {
         referenceOrder.child("Orders").child(order.getEmail()).child("state").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                boolean state= (boolean) dataSnapshot.getValue();
-                if (state){
-                    dialog.cancel();
-                    requestOrder(order);
+                if (dataSnapshot.exists()){
+                    boolean state= (boolean) dataSnapshot.getValue();
+                    if (state){
+                        dialog.cancel();
+                        requestOrder(order);
+                    }
                 }
             }
 
@@ -560,15 +565,23 @@ public class UserHome extends FragmentActivity implements OnMapReadyCallback {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 DatabaseReference reference=FirebaseDatabase.getInstance().getReference();
-                reference.child("Orders").child(order3.getEmail()).child("accept").setValue("2");
-                reference.child("Orders").child(order3.getEmail()).child("state").setValue(false);
+                HashMap<String,Object> valueUpdate=new HashMap<>();
+                valueUpdate.put("accept","2");
+                valueUpdate.put("state",false);
+                valueUpdate.put("helperID","empty");
+                reference.child("Orders").child(order3.getEmail()).updateChildren(valueUpdate);
                 order3.setState(false);
                 order3.setAccept("0");
                 viewWaitDialog(order3);
+                dialogShowOnce=false;
             }
         });
-        builder.create();
-        builder.show();
+
+        AlertDialog dialog=builder.create();
+        if (!dialog.isShowing() && !dialogShowOnce){
+            dialog.show();
+            dialogShowOnce=true;
+        }
     }
 
     //after approve show all helper info inside dialog
@@ -579,6 +592,7 @@ public class UserHome extends FragmentActivity implements OnMapReadyCallback {
         dialog1.setContentView(R.layout.helper_info_dialog);
         dialog1.setCanceledOnTouchOutside(false);
         dialog1.setCancelable(false);
+        if (!dialog1.isShowing())
         dialog1.show();
 
 
@@ -665,6 +679,7 @@ public class UserHome extends FragmentActivity implements OnMapReadyCallback {
                             rateHelper=helperRateOrder.getRating();
                             sendFeedBack(name, experience, rateHelper);
                             dialogFinish.dismiss();
+                            dialogShowOnce=false;
 
                         }
                     });
@@ -677,6 +692,7 @@ public class UserHome extends FragmentActivity implements OnMapReadyCallback {
             }
         });
 
+        if (!dialogFinish.isShowing())
         dialogFinish.show();
     }
 
