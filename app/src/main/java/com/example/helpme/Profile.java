@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
@@ -34,6 +35,7 @@ public class Profile extends AppCompatActivity {
     private SharedPreferences profilePref;
     private ProgressBar progressProfile;
     private Button editProfileBtn;
+    private ImageView backImage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +52,14 @@ public class Profile extends AppCompatActivity {
         carColorExpLevel=findViewById(R.id.profileCarColor);
         phoneNumber=findViewById(R.id.profilePhoneNumber);
         progressProfile=findViewById(R.id.progressProfile);
+        backImage=findViewById(R.id.imageBackBtnProfile);
+
+        backImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
 
 
         //retrieve email and password

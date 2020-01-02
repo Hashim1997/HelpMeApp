@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
@@ -30,6 +31,7 @@ public class FeedBackActivity extends AppCompatActivity {
     private String userID;
     private ProgressBar progressFeed;
     private  Button submitFeed;
+    private ImageView backImage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +42,14 @@ public class FeedBackActivity extends AppCompatActivity {
         final EditText feedBack=findViewById(R.id.feedBackText);
         submitFeed=findViewById(R.id.submit_feed);
         progressFeed=findViewById(R.id.progressFeed);
+        backImage=findViewById(R.id.imageBackBtnFeed);
+
+        backImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
 
         //offline storage for request email
         SharedPreferences preferences=getSharedPreferences("login",MODE_PRIVATE);

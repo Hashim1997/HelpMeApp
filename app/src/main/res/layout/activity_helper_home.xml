@@ -69,6 +69,7 @@
         android:layout_height="match_parent"
         android:background="@color/dark"
         android:padding="10dp"
+        android:layout_gravity="start"
         app:itemTextAppearance="@style/navigationDrawerStyle"
         app:menu="@menu/navigation_menu"
         android:id="@+id/navView"/>
